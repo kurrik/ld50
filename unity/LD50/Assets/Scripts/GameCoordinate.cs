@@ -42,7 +42,7 @@ public class GameCoordinate : Coordinate {
     }
   }
 
-  public void Tick(Vector3 cube, CubeCoordinates<GameCoordinate> coords) {
+  public void Tick(Vector3 cube, GameCubeCoordinates coords) {
     switch (type) {
       case GameCoordinateType.Starter:
         AffectPatternA(cube, coords);
@@ -59,7 +59,7 @@ public class GameCoordinate : Coordinate {
         new Vector3(-1.0f, 0.0f, 1.0f),
         new Vector3(1.0f, -1.0f, 0.0f),
     };
-  public void AffectPatternA(Vector3 cube, CubeCoordinates<GameCoordinate> coords) {
+  public void AffectPatternA(Vector3 cube, GameCubeCoordinates coords) {
     foreach (Vector3 offset in _patternA) {
       GameCoordinate neighbor = coords.GetCoordinateFromContainer(cube + offset, "all");
       if (neighbor && neighbor.type == GameCoordinateType.Empty) {
@@ -68,7 +68,7 @@ public class GameCoordinate : Coordinate {
     }
   }
 
-  public void AffectNeighbors(Vector3 cube, CubeCoordinates<GameCoordinate> coords) {
+  public void AffectNeighbors(Vector3 cube, GameCubeCoordinates coords) {
     foreach (Vector3 neighborCube in coords.GetNeighborCubes(cube)) {
       GameCoordinate neighbor = coords.GetCoordinateFromContainer(neighborCube, "all");
       if (neighbor.type == GameCoordinateType.Empty) {
@@ -83,7 +83,7 @@ public class GameCoordinate : Coordinate {
     }
   }
 
-  public void ClearRadius(Vector3 cube, CubeCoordinates<GameCoordinate> coords, int radius) {
+  public void ClearRadius(Vector3 cube, GameCubeCoordinates coords, int radius) {
     foreach (Vector3 neighborCube in coords.GetReachableCubes(cube, radius)) {
       GameCoordinate neighbor = coords.GetCoordinateFromContainer(neighborCube, "all");
       neighbor.SetType(GameCoordinateType.Empty);

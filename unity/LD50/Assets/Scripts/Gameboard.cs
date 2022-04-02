@@ -3,15 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Gameboard : MonoBehaviour {
-  private float _elapsed;
-  private GameCubeCoordinates _coords;
+  public Player playerPrefab;
   public int gridSize = 30;
   public float tickTimeStep = 0.5f;
 
+  public const string TriggerButton = "Trigger";
+
+  private float _elapsed;
+  private GameCubeCoordinates _coords;
+  private Player _player;
+  private Vector3 _inputDirection;
+
   private void BuildMap() {
     _coords.Construct(gridSize);
-
-
     /*
     // Remove 25% of Coordinates except 0,0,0
     foreach (Vector3 cube in coords.GetCubesFromContainer("all")) {
@@ -36,6 +40,7 @@ public class Gameboard : MonoBehaviour {
 
     // Construct Examples
     ConstructExamples();
+    ConstructPlayer();
   }
 
   private void ConstructExamples() {
@@ -52,6 +57,11 @@ public class Gameboard : MonoBehaviour {
 
     // Path between the first and last cube coordinate
     _coords.AddCubesToContainer(_coords.GetPathBetweenTwoCubes(allCubes[0], allCubes[allCubes.Count - 1]), "path");
+  }
+
+  private void ConstructPlayer() {
+    Vector3 startingCube = new Vector3(0, 0, 0);
+    _player = Instantiate(playerPrefab, _coords.ConvertCubeToWorldPosition(startingCube), playerPrefab.transform.rotation);
   }
 
   private void Tick() {
@@ -85,6 +95,9 @@ public class Gameboard : MonoBehaviour {
       _elapsed -= tickTimeStep;
       Tick();
     }
+    if (_inputDirection.sqrMagnitude > 0) {
+      _player.Move(_inputDirection, _coords);
+    }
   }
 
   void Update() {
@@ -113,6 +126,14 @@ public class Gameboard : MonoBehaviour {
 
     if (Input.GetKeyDown(KeyCode.T))
       Tick();
+
+    if (Input.GetButtonUp(TriggerButton)) {
+      _player.Trigger(_coords);
+    }
+
+    float horizontalInput = Input.GetAxisRaw("Horizontal");
+    float verticalInput = Input.GetAxisRaw("Vertical");
+    _inputDirection = new Vector3(horizontalInput, 0.0f, verticalInput);
 
     if (Input.GetMouseButtonDown(0)) {
       Vector3 worldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
