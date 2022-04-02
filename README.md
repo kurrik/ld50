@@ -24,3 +24,6 @@ Idea - "don't run out of gas!"
 - Cons: where does the scaling lie? what is being "good"? just timing pressing the button or not? do I have to introduce some other mechanic like jumping?  Maybe you upgrade your car between levels?  e.g. choose solar panels which help your car recover energy when it's sunny out
 
 Hex game of life thing.  We doin' that.
+
+# Tools
+- https://github.com/Banbury/UnityHexGrid
