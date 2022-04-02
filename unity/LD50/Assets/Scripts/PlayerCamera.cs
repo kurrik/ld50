@@ -31,7 +31,7 @@ public class PlayerCamera : MonoBehaviour {
 
   private void UpdateTargetPosition() {
     _zoomLevel = Mathf.Clamp(_player.amountMoved / _player.playerMaxAmountMoved, 0.0f, 1.0f) + 0.5f;
-    Debug.LogFormat("ZoomLevel {0}", _zoomLevel);
+    // Debug.LogFormat("ZoomLevel {0}", _zoomLevel);
     _targetPosition = _player.transform.position + playerOffset * _zoomLevel;
   }
 }

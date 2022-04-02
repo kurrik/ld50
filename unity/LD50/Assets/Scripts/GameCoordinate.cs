@@ -7,6 +7,8 @@ public enum GameCoordinateType {
   SpreadAlpha,
   Objective,
   Blockage,
+  TemporaryBlockage,
+  DamagedTemporaryBlockage,
 }
 
 [RequireComponent(typeof(MeshRenderer))]
@@ -16,6 +18,8 @@ public class GameCoordinate : Coordinate {
   public GameCoordinateType type;
   public GameCoordinateType? nextType;
   private int tickCount;
+  private bool takeDamageOnTick;
+  private int hitPoints;
 
   // Initializes the Coordinate given a cube coordinate and world transform position
   public void Init(Vector3 cube, Vector3 position, GameCubeCoordinates coords) {
@@ -77,8 +81,17 @@ public class GameCoordinate : Coordinate {
   public void SpreadAlpha(Vector3 cube, GameCubeCoordinates coords) {
     foreach (Vector3 offset in _spreadAlphaPattern) {
       GameCoordinate neighbor = coords.GetCoordinateFromContainer(cube + offset, "all");
-      if (neighbor && neighbor.type == GameCoordinateType.Empty) {
-        neighbor.nextType = GameCoordinateType.SpreadAlpha;
+      if (!neighbor) {
+        continue;
+      }
+      switch (neighbor.type) {
+        case GameCoordinateType.Empty:
+          neighbor.nextType = GameCoordinateType.SpreadAlpha;
+          break;
+        case GameCoordinateType.DamagedTemporaryBlockage:
+        case GameCoordinateType.TemporaryBlockage:
+          neighbor.takeDamageOnTick = true;
+          break;
       }
     }
   }
@@ -86,7 +99,16 @@ public class GameCoordinate : Coordinate {
   public void ApplyTick() {
     if (nextType != null) {
       SetType((GameCoordinateType)nextType);
+    } else if (takeDamageOnTick) {
+      hitPoints -= 1;
+      if (type == GameCoordinateType.TemporaryBlockage) {
+        SetType(GameCoordinateType.DamagedTemporaryBlockage);
+      }
+      if (type == GameCoordinateType.DamagedTemporaryBlockage && hitPoints <= 0) {
+        SetType(GameCoordinateType.Empty);
+      }
     }
+    takeDamageOnTick = false;
   }
 
   public void ClearRadius(Vector3 cube, GameCubeCoordinates coords, int radius) {
@@ -98,6 +120,20 @@ public class GameCoordinate : Coordinate {
         neighbor.SetType(GameCoordinateType.Empty);
       }
     }
+  }
+
+  public bool SetTemporaryBlockage(Vector3 cube, GameCubeCoordinates coords, int radius) {
+    bool placed = false;
+    List<Vector3> reachableCubes = coords.GetReachableCubes(cube, radius);
+    reachableCubes.Add(cube);
+    foreach (Vector3 neighborCube in reachableCubes) {
+      GameCoordinate neighbor = coords.GetCoordinateFromContainer(neighborCube, "all");
+      if (neighbor.type == GameCoordinateType.Empty) {
+        neighbor.SetType(GameCoordinateType.TemporaryBlockage);
+        placed = true;
+      }
+    }
+    return placed;
   }
 
   private void SetType(GameCoordinateType newType) {
@@ -121,6 +157,15 @@ public class GameCoordinate : Coordinate {
       case GameCoordinateType.Objective:
         meshRenderer.material = Gameboard.instance.ObjectiveMaterial;
         elevation = 2.0f;
+        break;
+      case GameCoordinateType.TemporaryBlockage:
+        meshRenderer.material = Gameboard.instance.TemporaryBlockageMaterial;
+        elevation = 1.0f;
+        hitPoints = Gameboard.instance.temporaryBlockageHitPoints;
+        break;
+      case GameCoordinateType.DamagedTemporaryBlockage:
+        meshRenderer.material = Gameboard.instance.DamagedBlockageMaterial;
+        elevation = 0.5f;
         break;
       default:
         // Uh oh?

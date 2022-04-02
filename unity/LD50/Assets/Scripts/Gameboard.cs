@@ -15,6 +15,7 @@ public class Gameboard : MonoBehaviour {
   public int gridSize = 30;
   public float tickTimeStep = 0.5f;
   public int objectiveRadius = 1;
+  public int temporaryBlockageHitPoints = 5;
 
   public const string TriggerButton = "Trigger";
 
@@ -24,6 +25,8 @@ public class Gameboard : MonoBehaviour {
   public Material ObjectiveMaterial;
   public Material SpreadAlphaMaterial;
   public Material BlockageMaterial;
+  public Material TemporaryBlockageMaterial;
+  public Material DamagedBlockageMaterial;
 
   public bool unityEditorShowStartup = false;
   public bool ShowStartup {
@@ -61,8 +64,8 @@ public class Gameboard : MonoBehaviour {
     SceneManager.LoadScene(SceneManager.GetActiveScene().name);
   }
 
-  private void OnNotEnoughAttackPower() {
-    Debug.LogFormat("Not enough attack power!");
+  private void OnFailedAttack() {
+    Debug.LogFormat("Failed attack!");
   }
 
   private void OnAttack() {
@@ -154,7 +157,7 @@ public class Gameboard : MonoBehaviour {
   void Start() {
     BuildMap();
     _elapsed = 0.0f;
-    _player.OnNotEnoughAttackPower.AddListener(OnNotEnoughAttackPower);
+    _player.OnFailedAttack.AddListener(OnFailedAttack);
     _player.OnAttack.AddListener(OnAttack);
     _player.OnAttackPowerUpdate.AddListener(OnAttackPowerUpdate);
   }

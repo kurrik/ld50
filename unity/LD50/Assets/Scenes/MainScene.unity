@@ -1118,10 +1118,13 @@ MonoBehaviour:
   gridSize: 20
   tickTimeStep: 0.5
   objectiveRadius: 1
+  temporaryBlockageHitPoints: 5
   EmptyMaterial: {fileID: 2100000, guid: e3091c17ba218dc41a13f22f5f69f9ea, type: 2}
   ObjectiveMaterial: {fileID: 2100000, guid: da4c1064056c59d4ab52cd4ebafcfa4a, type: 2}
   SpreadAlphaMaterial: {fileID: 2100000, guid: a228fb94f3c54884abbe5c19fde91164, type: 2}
   BlockageMaterial: {fileID: 2100000, guid: 15f5a858bdec2864882b00ab28376abf, type: 2}
+  TemporaryBlockageMaterial: {fileID: 2100000, guid: a5f10e9906f7374469b523154d1bdee0, type: 2}
+  DamagedBlockageMaterial: {fileID: 2100000, guid: a5b9a43a2cdab954ca2df3058f531f6b, type: 2}
   unityEditorShowStartup: 0
 --- !u!4 &1681676746
 Transform:
@@ -1335,6 +1338,22 @@ PrefabInstance:
     - target: {fileID: 20586688406597600, guid: 2fd87e11e6318634a83e501ac7f16b7a, type: 3}
       propertyPath: m_Name
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 492855825025846610, guid: 2fd87e11e6318634a83e501ac7f16b7a, type: 3}
+      propertyPath: attack1Cost
+      value: 0.09
+      objectReference: {fileID: 0}
+    - target: {fileID: 492855825025846610, guid: 2fd87e11e6318634a83e501ac7f16b7a, type: 3}
+      propertyPath: attack2Cost
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 492855825025846610, guid: 2fd87e11e6318634a83e501ac7f16b7a, type: 3}
+      propertyPath: attack3Cost
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 492855825025846610, guid: 2fd87e11e6318634a83e501ac7f16b7a, type: 3}
+      propertyPath: attack4Cost
+      value: 0.7
       objectReference: {fileID: 0}
     - target: {fileID: 8679886885862483386, guid: 2fd87e11e6318634a83e501ac7f16b7a, type: 3}
       propertyPath: m_RootOrder

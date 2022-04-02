@@ -65,9 +65,10 @@ public class Player : MonoBehaviour {
   public float attack4Cost = 0.5f;
   public Color attack4Color = Color.red;
 
-  public UnityEvent OnNotEnoughAttackPower = new UnityEvent();
+  public UnityEvent OnFailedAttack = new UnityEvent();
   public UnityEvent OnAttack = new UnityEvent();
   public UnityEvent<AttackPowerInfo> OnAttackPowerUpdate = new UnityEvent<AttackPowerInfo>();
+  public UnityEvent OnTemporaryBlockage = new UnityEvent();
 
   void Start() {
     attackPower = 0.0f;
@@ -97,27 +98,32 @@ public class Player : MonoBehaviour {
     if (coordinate) {
       switch (_attackPowerInfo.Type) {
         case AttackType.Attack1:
-          coordinate.ClearRadius(_cube, coords, 1);
+          coordinate.ClearRadius(_cube, coords, 2);
           attackPower -= attack1Cost;
           OnAttack.Invoke();
           break;
         case AttackType.Attack2:
-          coordinate.ClearRadius(_cube, coords, 2);
+          coordinate.ClearRadius(_cube, coords, 3);
           attackPower -= attack2Cost;
           OnAttack.Invoke();
           break;
         case AttackType.Attack3:
-          coordinate.ClearRadius(_cube, coords, 3);
+          coordinate.ClearRadius(_cube, coords, 4);
           attackPower -= attack3Cost;
           OnAttack.Invoke();
           break;
         case AttackType.Attack4:
-          coordinate.ClearRadius(_cube, coords, 4);
+          coordinate.ClearRadius(_cube, coords, 5);
           attackPower -= attack4Cost;
           OnAttack.Invoke();
           break;
         default:
-          OnNotEnoughAttackPower.Invoke();
+          if (coordinate.SetTemporaryBlockage(_cube, coords, 1)) {
+            attackPower = 0.0f;
+            OnTemporaryBlockage.Invoke();
+          } else {
+            OnFailedAttack.Invoke();
+          }
           break;
       }
     }

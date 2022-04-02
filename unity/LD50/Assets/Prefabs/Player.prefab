@@ -48,22 +48,25 @@ MonoBehaviour:
   playerAmountMovedDecay: 20
   playerSpeed: 0.5
   attackPowerRegenPerSecond: 0.1
-  noAttackColor: {r: 1, g: 0.38113207, b: 0.48891234, a: 1}
-  attack1Cost: 0.08
-  attack1Color: {r: 0.41719043, g: 0.7169812, b: 0.33414024, a: 1}
-  attack2Cost: 0.15
-  attack2Color: {r: 0.31505868, g: 0.58313274, b: 0.9433962, a: 1}
-  attack3Cost: 0.3
-  attack3Color: {r: 0.9583466, g: 0.2584905, b: 1, a: 1}
-  attack4Cost: 0.5
-  attack4Color: {r: 1, g: 0.15985951, b: 0, a: 1}
-  OnNotEnoughAttackPower:
+  noAttackColor: {r: 0.25361332, g: 0.74976736, b: 0.9811321, a: 1}
+  attack1Cost: 0.09
+  attack1Color: {r: 0.46185982, g: 1, b: 0.3150943, a: 1}
+  attack2Cost: 0.3
+  attack2Color: {r: 1, g: 0.93887115, b: 0.14528298, a: 1}
+  attack3Cost: 0.5
+  attack3Color: {r: 1, g: 0.16634841, b: 0, a: 1}
+  attack4Cost: 0.7
+  attack4Color: {r: 0.7856045, g: 0, b: 1, a: 1}
+  OnFailedAttack:
     m_PersistentCalls:
       m_Calls: []
   OnAttack:
     m_PersistentCalls:
       m_Calls: []
   OnAttackPowerUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+  OnTemporaryBlockage:
     m_PersistentCalls:
       m_Calls: []
 --- !u!1001 &8958542313118674195
