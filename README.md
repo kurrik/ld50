@@ -2,8 +2,8 @@
 Ludum Dare 50
 
 ## TODO
-- [ ] Controller wired up
-- [ ] Move cursor around
+- [x] Controller wired up
+- [x] Move cursor around
 - [ ] Rate limit attacks
 - [ ] Different kinds of attacks
 - [ ] Failure case
