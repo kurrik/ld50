@@ -11,6 +11,7 @@ public class Gameboard : MonoBehaviour {
 
   public Player playerPrefab;
   public AttackBar attackBar;
+  public PlayerCamera playerCamera;
   public int gridSize = 30;
   public float tickTimeStep = 0.5f;
   public int objectiveRadius = 1;
@@ -68,6 +69,10 @@ public class Gameboard : MonoBehaviour {
     Debug.LogFormat("Attack!");
   }
 
+  private void OnAttackPowerUpdate(AttackPowerInfo info) {
+    attackBar.SetValue(info.Amount, info.Color);
+  }
+
   private void BuildMap() {
     _coords.Construct(gridSize);
     /*
@@ -117,6 +122,7 @@ public class Gameboard : MonoBehaviour {
     Vector3 startingCube = new Vector3(0, 0, 0);
     _player = Instantiate(playerPrefab, _coords.ConvertCubeToWorldPosition(startingCube), playerPrefab.transform.rotation);
     _player.Init(startingCube, _coords);
+    playerCamera.Init(_player);
   }
 
   private void Tick() {
@@ -150,6 +156,7 @@ public class Gameboard : MonoBehaviour {
     _elapsed = 0.0f;
     _player.OnNotEnoughAttackPower.AddListener(OnNotEnoughAttackPower);
     _player.OnAttack.AddListener(OnAttack);
+    _player.OnAttackPowerUpdate.AddListener(OnAttackPowerUpdate);
   }
 
   void FixedUpdate() {
@@ -161,35 +168,47 @@ public class Gameboard : MonoBehaviour {
     if (_inputDirection.sqrMagnitude > 0) {
       _player.Move(_inputDirection, _coords);
     }
-    attackBar.SetValue(_player.attackPower);
   }
 
   void Update() {
-    if (Input.GetKeyDown(KeyCode.Return)) {
-      BuildMap();
-      return;
+    if (Gameboard.instance.DebugEnabled) {
+      if (Input.GetKeyDown(KeyCode.F1)) {
+        BuildMap();
+        return;
+      }
+      if (_coords.GetCoordinatesFromContainer("all").Count == 0)
+        return;
+      if (Input.GetKeyDown(KeyCode.F2)) {
+        _coords.ShowCoordinatesInContainer("all");
+      }
+      if (Input.GetKeyDown(KeyCode.F5))
+        ShowExample("line");
+
+      if (Input.GetKeyDown(KeyCode.F6))
+        ShowExample("reachable");
+
+      if (Input.GetKeyDown(KeyCode.F7))
+        ShowExample("spiral");
+
+      if (Input.GetKeyDown(KeyCode.F8))
+        ShowExample("path");
+
+      if (Input.GetKeyDown(KeyCode.F9))
+        Tick();
+
+      if (Input.GetMouseButtonDown(1)) {
+        Vector3 worldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit, 200f)) {
+          Vector3 cube = _coords.ConvertWorldPositionToCube(hit.point);
+          GameCoordinate coordinate = _coords.GetCoordinateFromContainer(cube, "all");
+          if (coordinate) {
+            coordinate.ClearRadius(cube, _coords, 2);
+          }
+        }
+      }
     }
-    if (_coords.GetCoordinatesFromContainer("all").Count == 0)
-      return;
-
-    if (Input.GetKeyDown(KeyCode.Backspace)) {
-      _coords.ShowCoordinatesInContainer("all");
-    }
-
-    if (Input.GetKeyDown(KeyCode.L))
-      ShowExample("line");
-
-    if (Input.GetKeyDown(KeyCode.R))
-      ShowExample("reachable");
-
-    if (Input.GetKeyDown(KeyCode.S))
-      ShowExample("spiral");
-
-    if (Input.GetKeyDown(KeyCode.P))
-      ShowExample("path");
-
-    if (Input.GetKeyDown(KeyCode.T))
-      Tick();
 
     if (Input.GetButtonUp(TriggerButton)) {
       _player.Trigger(_coords);
@@ -198,18 +217,5 @@ public class Gameboard : MonoBehaviour {
     float horizontalInput = Input.GetAxisRaw("Horizontal");
     float verticalInput = Input.GetAxisRaw("Vertical");
     _inputDirection = new Vector3(horizontalInput, 0.0f, verticalInput);
-
-    if (Input.GetMouseButtonDown(0)) {
-      Vector3 worldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-      Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-      RaycastHit hit;
-      if (Physics.Raycast(ray, out hit, 200f)) {
-        Vector3 cube = _coords.ConvertWorldPositionToCube(hit.point);
-        GameCoordinate coordinate = _coords.GetCoordinateFromContainer(cube, "all");
-        if (coordinate) {
-          coordinate.ClearRadius(cube, _coords, 2);
-        }
-      }
-    }
   }
 }

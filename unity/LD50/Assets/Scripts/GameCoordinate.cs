@@ -15,6 +15,7 @@ public class GameCoordinate : Coordinate {
   private MeshRenderer meshRenderer;
   public GameCoordinateType type;
   public GameCoordinateType? nextType;
+  private int tickCount;
 
   // Initializes the Coordinate given a cube coordinate and world transform position
   public void Init(Vector3 cube, Vector3 position, GameCubeCoordinates coords) {
@@ -56,6 +57,7 @@ public class GameCoordinate : Coordinate {
   }
 
   public void Tick(Vector3 cube, GameCubeCoordinates coords) {
+    tickCount += 1;
     switch (type) {
       case GameCoordinateType.SpreadAlpha:
         SpreadAlpha(cube, coords);
@@ -101,6 +103,9 @@ public class GameCoordinate : Coordinate {
   private void SetType(GameCoordinateType newType) {
     bool visible = true;
     float elevation = 0.0f;
+    if (newType == type) {
+      return;
+    }
     switch (newType) {
       case GameCoordinateType.SpreadAlpha:
         meshRenderer.material = Gameboard.instance.SpreadAlphaMaterial;
@@ -122,6 +127,7 @@ public class GameCoordinate : Coordinate {
         break;
     }
     type = newType;
+    tickCount = 0;
     nextType = null;
     if (visible) {
       Show();
