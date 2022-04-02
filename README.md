@@ -1,6 +1,22 @@
 # LD50 - Delay the inevitable
 Ludum Dare 50
 
+## TODO
+- [ ] Controller wired up
+- [ ] Move cursor around
+- [ ] Rate limit attacks
+- [ ] Different kinds of attacks
+- [ ] Failure case
+- [ ] Success case?
+- [ ] Level cycling?
+- [ ] Points system
+- [ ] HUD
+- [ ] Music
+- [ ] Sound effects
+- [ ] Visual effects
+- [ ] Camera movement?
+- [ ] Better art
+
 ## Brainstorming
 Things which feel inevitable:
 - water rising 
