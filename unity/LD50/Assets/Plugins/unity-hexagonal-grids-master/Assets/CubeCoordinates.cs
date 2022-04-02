@@ -38,6 +38,11 @@ public class CubeCoordinates<T> : MonoBehaviour where T : Coordinate {
         new Vector3(1.0f, -2.0f, 1.0f)
     };
 
+  private int _radius;
+  public int radius {
+    get { return _radius; }
+  }
+
   private void Awake() {
     CalculateCoordinateDimensions();
   }
@@ -59,6 +64,7 @@ public class CubeCoordinates<T> : MonoBehaviour where T : Coordinate {
   public void Construct(int radius) {
     Clear();
     _group = new GameObject("CubeCoordinates");
+    _radius = radius;
 
     for (int x = -radius; x <= radius; x++)
       for (int y = -radius; y <= radius; y++)
@@ -81,15 +87,17 @@ public class CubeCoordinates<T> : MonoBehaviour where T : Coordinate {
     GameObject obj;
     T coordinate;
     if (coordinatePrefab != null) {
-      coordinate = Instantiate(coordinatePrefab, new Vector3(0, 0, 0), Quaternion.identity);
+      coordinate = Instantiate(coordinatePrefab, new Vector3(0, 0, 0), coordinatePrefab.transform.rotation);
       obj = coordinate.gameObject;
     } else {
-      obj = new GameObject("Coordinate: [" + cube.x + "," + cube.y + "," + cube.z + "]");
+      obj = new GameObject();
       coordinate = obj.AddComponent<TestCoordinate>() as T;
     }
+    obj.name = "Coordinate: [" + cube.x + "," + cube.y + "," + cube.z + "]";
     coordinate.Init(
         cube,
-        ConvertCubeToWorldPosition(cube)
+        ConvertCubeToWorldPosition(cube),
+        radius
     );
     obj.transform.parent = _group.transform;
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class Coordinate : MonoBehaviour {
-  virtual public void Init(Vector3 cube, Vector3 position) {
+  virtual public void Init(Vector3 cube, Vector3 position, int radius) {
     this._cube = cube;
     this._position = position;
     gameObject.transform.position = _position;
@@ -32,8 +32,8 @@ public class TestCoordinate : Coordinate {
   private MeshCollider _meshCollider;
 
   // Initializes the Coordinate given a cube coordinate and world transform position
-  public override void Init(Vector3 cube, Vector3 position) {
-    base.Init(cube, position);
+  public override void Init(Vector3 cube, Vector3 position, int radius) {
+    base.Init(cube, position, radius);
 
     HexMeshCreator.Instance.AddToGameObject(this.gameObject, HexMeshCreator.Type.Tile, true);
     _meshRenderer = gameObject.GetComponent<MeshRenderer>();
