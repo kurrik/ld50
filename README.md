@@ -14,7 +14,9 @@ Ludum Dare 50
 - [ ] Music
 - [ ] Sound effects
 - [ ] Visual effects
-- [ ] Camera movement?
+- [ ] Camera movement
+- [ ] Camera zoom
+- [ ] Splash screen
 - [ ] Better art
 
 ## Brainstorming
