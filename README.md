@@ -26,4 +26,4 @@ Idea - "don't run out of gas!"
 Hex game of life thing.  We doin' that.
 
 # Tools
-- https://github.com/Banbury/UnityHexGrid
+- https://github.com/Hengle/unity-hexagonal-grids
