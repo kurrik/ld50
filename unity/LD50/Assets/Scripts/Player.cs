@@ -1,18 +1,26 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Player : MonoBehaviour {
   private Vector3 _cube;
   private Vector3 _realPosition;
-  public float playerSpeed = 0.5f;
 
-  void Start() {
-
+  private float _attackPower;
+  public float attackPower {
+    get { return _attackPower; }
   }
 
-  void Update() {
+  public float playerSpeed = 0.5f;
+  public float attackPowerRegenPerSecond = 0.1f;
+  public float attack1Cost = 0.05f;
 
+  public UnityEvent OnNotEnoughAttackPower = new UnityEvent();
+  public UnityEvent OnAttack = new UnityEvent();
+
+  void Start() {
+    _attackPower = 0.0f;
   }
 
   public void Init(Vector3 cube, GameCubeCoordinates coords) {
@@ -36,7 +44,17 @@ public class Player : MonoBehaviour {
   public void Trigger(GameCubeCoordinates coords) {
     GameCoordinate coordinate = coords.GetCoordinateFromContainer(_cube, "all");
     if (coordinate) {
-      coordinate.ClearRadius(_cube, coords, 2);
+      if (_attackPower >= attack1Cost) {
+        coordinate.ClearRadius(_cube, coords, 2);
+        _attackPower -= attack1Cost;
+        OnAttack.Invoke();
+      } else {
+        OnNotEnoughAttackPower.Invoke();
+      }
     }
+  }
+
+  void FixedUpdate() {
+    _attackPower = Mathf.Clamp(_attackPower + attackPowerRegenPerSecond * Time.fixedDeltaTime, 0.0f, 1.0f);
   }
 }

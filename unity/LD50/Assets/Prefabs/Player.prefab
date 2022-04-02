@@ -44,6 +44,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd1549ce36e88e7478fb480450c9700e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerSpeed: 0.5
+  attackPowerRegenPerSecond: 0.1
+  attack1Cost: 0.08
+  OnNotEnoughAttackPower:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1001 &8958542313118674195
 PrefabInstance:
   m_ObjectHideFlags: 0

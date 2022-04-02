@@ -10,6 +10,7 @@ public class Gameboard : MonoBehaviour {
   private Vector3 _inputDirection;
 
   public Player playerPrefab;
+  public AttackBar attackBar;
   public int gridSize = 30;
   public float tickTimeStep = 0.5f;
   public int objectiveRadius = 1;
@@ -57,6 +58,14 @@ public class Gameboard : MonoBehaviour {
 
   public void Reload() {
     SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+  }
+
+  private void OnNotEnoughAttackPower() {
+    Debug.LogFormat("Not enough attack power!");
+  }
+
+  private void OnAttack() {
+    Debug.LogFormat("Attack!");
   }
 
   private void BuildMap() {
@@ -139,6 +148,8 @@ public class Gameboard : MonoBehaviour {
   void Start() {
     BuildMap();
     _elapsed = 0.0f;
+    _player.OnNotEnoughAttackPower.AddListener(OnNotEnoughAttackPower);
+    _player.OnAttack.AddListener(OnAttack);
   }
 
   void FixedUpdate() {
@@ -150,6 +161,7 @@ public class Gameboard : MonoBehaviour {
     if (_inputDirection.sqrMagnitude > 0) {
       _player.Move(_inputDirection, _coords);
     }
+    attackBar.SetValue(_player.attackPower);
   }
 
   void Update() {
