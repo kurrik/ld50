@@ -17,7 +17,8 @@ public class Player : MonoBehaviour {
 
   public void Init(Vector3 cube, GameCubeCoordinates coords) {
     _cube = cube;
-    transform.position = coords.ConvertCubeToWorldPosition(cube);
+    GameCoordinate coordinate = coords.GetCoordinateFromContainer(cube, "all");
+    transform.position = coordinate.transform.position;
     _realPosition = transform.position;
   }
 

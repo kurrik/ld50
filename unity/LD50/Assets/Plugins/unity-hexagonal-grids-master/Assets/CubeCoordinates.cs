@@ -2,11 +2,9 @@
 using System;
 using System.Collections.Generic;
 
-public class CubeCoordinates<T> : MonoBehaviour where T : Coordinate {
-  public T coordinatePrefab;
+public abstract class CubeCoordinates<T> : MonoBehaviour where T : Coordinate {
 
   private Dictionary<string, Dictionary<Vector3, T>> _coordinateContainers = new Dictionary<string, Dictionary<Vector3, T>>();
-
   private GameObject _group;
 
   private float _gameScale = 1.0f;
@@ -83,26 +81,15 @@ public class CubeCoordinates<T> : MonoBehaviour where T : Coordinate {
   public void AddCube(Vector3 cube) {
     if (GetCoordinateFromContainer(cube, "all") != null)
       return;
-
     GameObject obj;
-    T coordinate;
-    if (coordinatePrefab != null) {
-      coordinate = Instantiate(coordinatePrefab, new Vector3(0, 0, 0), coordinatePrefab.transform.rotation);
-      obj = coordinate.gameObject;
-    } else {
-      obj = new GameObject();
-      coordinate = obj.AddComponent<TestCoordinate>() as T;
-    }
+    T coordinate = CreateCoordinate(cube);
+    obj = coordinate.gameObject;
     obj.name = "Coordinate: [" + cube.x + "," + cube.y + "," + cube.z + "]";
-    coordinate.Init(
-        cube,
-        ConvertCubeToWorldPosition(cube),
-        radius
-    );
     obj.transform.parent = _group.transform;
-
     AddCoordinateToContainer(coordinate, "all");
   }
+
+  public abstract T CreateCoordinate(Vector3 cube);
 
   // Creates a set of T GameObjects for a given list of cube coordinates
   public void AddCubes(List<Vector3> cubes) {

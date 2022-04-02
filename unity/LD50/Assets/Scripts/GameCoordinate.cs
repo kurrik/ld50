@@ -1,4 +1,6 @@
 using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
 
 public enum GameCoordinateType {
   Empty,
@@ -15,13 +17,13 @@ public class GameCoordinate : Coordinate {
   public GameCoordinateType? nextType;
 
   // Initializes the Coordinate given a cube coordinate and world transform position
-  public override void Init(Vector3 cube, Vector3 position, int radius) {
-    base.Init(cube, position, radius);
+  public void Init(Vector3 cube, Vector3 position, GameCubeCoordinates coords) {
+    base.Init(cube, position);
     meshRenderer = gameObject.GetComponent<MeshRenderer>();
     float randomTypeValue = Random.Range(0.0f, 1.0f);
-    if (isObjectivePosition(cube)) {
+    if (isObjectivePosition(cube, coords)) {
       SetType(GameCoordinateType.Objective);
-    } else if (isStarterCubePosition(cube, radius)) {
+    } else if (isStarterCubePosition(cube, coords.radius)) {
       SetType(GameCoordinateType.SpreadAlpha);
     } else if (randomTypeValue < 0.2f) {
       SetType(GameCoordinateType.Blockage);
@@ -30,8 +32,12 @@ public class GameCoordinate : Coordinate {
     }
   }
 
-  private bool isObjectivePosition(Vector3 cube) {
-    return cube == Vector3.zero;
+  private bool isObjectivePosition(Vector3 cube, GameCubeCoordinates coords) {
+    Vector3 origin = Vector3.zero;
+    if (coords.GetDistanceBetweenTwoCubes(cube, origin) <= Gameboard.instance.objectiveRadius) {
+      return true;
+    }
+    return false;
   }
 
   private bool isStarterCubePosition(Vector3 cube, int radius) {
@@ -82,33 +88,34 @@ public class GameCoordinate : Coordinate {
   }
 
   public void ClearRadius(Vector3 cube, GameCubeCoordinates coords, int radius) {
-    foreach (Vector3 neighborCube in coords.GetReachableCubes(cube, radius)) {
+    List<Vector3> reachableCubes = coords.GetReachableCubes(cube, radius);
+    reachableCubes.Add(cube);
+    foreach (Vector3 neighborCube in reachableCubes) {
       GameCoordinate neighbor = coords.GetCoordinateFromContainer(neighborCube, "all");
       if (neighbor.type == GameCoordinateType.SpreadAlpha) {
         neighbor.SetType(GameCoordinateType.Empty);
       }
     }
-    SetType(GameCoordinateType.Empty);
   }
 
   private void SetType(GameCoordinateType newType) {
+    bool visible = true;
+    float elevation = 0.0f;
     switch (newType) {
       case GameCoordinateType.SpreadAlpha:
         meshRenderer.material = Gameboard.instance.SpreadAlphaMaterial;
-        Show();
         break;
       case GameCoordinateType.Empty:
-        Show();
         meshRenderer.material = Gameboard.instance.EmptyMaterial;
         break;
       case GameCoordinateType.Blockage:
         //meshRenderer.material.color = Random.ColorHSV();
         meshRenderer.material = Gameboard.instance.BlockageMaterial;
-        Show();
+        elevation = 1.0f;
         break;
       case GameCoordinateType.Objective:
         meshRenderer.material = Gameboard.instance.ObjectiveMaterial;
-        Show();
+        elevation = 2.0f;
         break;
       default:
         // Uh oh?
@@ -116,6 +123,16 @@ public class GameCoordinate : Coordinate {
     }
     type = newType;
     nextType = null;
+    if (visible) {
+      Show();
+    } else {
+      Hide();
+    }
+    if (elevation != transform.position.y) {
+      Vector3 newPosition = transform.position;
+      newPosition.y = elevation;
+      transform.position = newPosition;
+    }
   }
 
   // Hides the Coordinate

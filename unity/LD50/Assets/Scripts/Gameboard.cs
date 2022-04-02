@@ -12,6 +12,7 @@ public class Gameboard : MonoBehaviour {
   public Player playerPrefab;
   public int gridSize = 30;
   public float tickTimeStep = 0.5f;
+  public int objectiveRadius = 1;
 
   public const string TriggerButton = "Trigger";
 
@@ -106,6 +107,7 @@ public class Gameboard : MonoBehaviour {
   private void ConstructPlayer() {
     Vector3 startingCube = new Vector3(0, 0, 0);
     _player = Instantiate(playerPrefab, _coords.ConvertCubeToWorldPosition(startingCube), playerPrefab.transform.rotation);
+    _player.Init(startingCube, _coords);
   }
 
   private void Tick() {
