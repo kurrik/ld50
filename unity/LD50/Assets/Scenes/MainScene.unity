@@ -578,6 +578,11 @@ MonoBehaviour:
   playerPrefab: {fileID: 8958542311971765006}
   gridSize: 20
   tickTimeStep: 0.5
+  EmptyMaterial: {fileID: 2100000, guid: e3091c17ba218dc41a13f22f5f69f9ea, type: 2}
+  ObjectiveMaterial: {fileID: 2100000, guid: da4c1064056c59d4ab52cd4ebafcfa4a, type: 2}
+  SpreadAlphaMaterial: {fileID: 2100000, guid: a228fb94f3c54884abbe5c19fde91164, type: 2}
+  BlockageMaterial: {fileID: 2100000, guid: 15f5a858bdec2864882b00ab28376abf, type: 2}
+  unityEditorShowStartup: 0
 --- !u!4 &1681676746
 Transform:
   m_ObjectHideFlags: 0

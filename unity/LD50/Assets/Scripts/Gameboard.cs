@@ -1,18 +1,62 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Gameboard : MonoBehaviour {
+  private float _elapsed;
+  private GameCubeCoordinates _coords;
+  private Player _player;
+  private Vector3 _inputDirection;
+
   public Player playerPrefab;
   public int gridSize = 30;
   public float tickTimeStep = 0.5f;
 
   public const string TriggerButton = "Trigger";
 
-  private float _elapsed;
-  private GameCubeCoordinates _coords;
-  private Player _player;
-  private Vector3 _inputDirection;
+  public static Gameboard instance = null;
+
+  public Material EmptyMaterial;
+  public Material ObjectiveMaterial;
+  public Material SpreadAlphaMaterial;
+  public Material BlockageMaterial;
+
+  public bool unityEditorShowStartup = false;
+  public bool ShowStartup {
+    get {
+#if UNITY_EDITOR
+      return unityEditorShowStartup;
+#else
+      return true;
+#endif
+    }
+  }
+
+  public bool DebugEnabled {
+    get {
+#if UNITY_EDITOR
+      return true;
+#else
+      return false;
+#endif
+    }
+  }
+
+  public void End() {
+  }
+
+  public void Quit() {
+#if UNITY_EDITOR
+    UnityEditor.EditorApplication.isPlaying = false;
+#else
+    Application.Quit();
+#endif
+  }
+
+  public void Reload() {
+    SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+  }
 
   private void BuildMap() {
     _coords.Construct(gridSize);
@@ -76,6 +120,12 @@ public class Gameboard : MonoBehaviour {
   }
 
   private void Awake() {
+    if (instance == null) {
+      instance = this;
+    } else if (instance != this) {
+      Destroy(gameObject);
+      return;
+    }
     _coords = gameObject.GetComponent<GameCubeCoordinates>();
   }
 
