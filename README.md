@@ -19,7 +19,7 @@ Ludum Dare 50
 - [ ] Sound effects
 - [ ] Score VFX
 - [x] VFX for attacks
-- [ ] Better art / fonts / splash screens
+- [x] Better art / fonts / splash screens
 - [x] Mechanic to solve the stalemate problem
 
 ## Brainstorming
