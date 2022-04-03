@@ -8,7 +8,7 @@ public class AttackBar : MonoBehaviour {
   private Slider slider;
   public Image fillImage;
 
-  void Start() {
+  void Awake() {
     slider = GetComponent<Slider>();
   }
 

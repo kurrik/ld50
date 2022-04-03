@@ -9,6 +9,9 @@ public class Gameboard : MonoBehaviour {
   private Player _player;
   private Vector3 _inputDirection;
 
+  public const string TriggerButton = "Trigger";
+  public static Gameboard instance = null;
+
   public Player playerPrefab;
   public AttackBar attackBar;
   public PlayerCamera playerCamera;
@@ -18,9 +21,9 @@ public class Gameboard : MonoBehaviour {
   public int temporaryBlockageHitPoints = 5;
   public int spreadBetaHitPoints = 20;
 
-  public const string TriggerButton = "Trigger";
-
-  public static Gameboard instance = null;
+  public GameStateManager states;
+  public StateSplash stateSplash;
+  public StatePlay statePlay;
 
   public Material EmptyMaterial;
   public Material ObjectiveMaterial;
@@ -149,6 +152,11 @@ public class Gameboard : MonoBehaviour {
       return;
     }
     _coords = gameObject.GetComponent<GameCubeCoordinates>();
+    states = new GameStateManager();
+    states.PushState(statePlay);
+    if (stateSplash) {
+      stateSplash.gameObject.SetActive(true);
+    }
   }
 
   private void ShowExample(string key) {
@@ -165,6 +173,8 @@ public class Gameboard : MonoBehaviour {
   }
 
   void FixedUpdate() {
+    states.StateFixedUpdate();
+
     _elapsed += Time.fixedDeltaTime;
     if (_elapsed > tickTimeStep) {
       _elapsed -= tickTimeStep;
@@ -176,6 +186,8 @@ public class Gameboard : MonoBehaviour {
   }
 
   void Update() {
+    states.StateUpdate();
+
     if (Gameboard.instance.DebugEnabled) {
       if (Input.GetKeyDown(KeyCode.F1)) {
         BuildMap();
