@@ -18,9 +18,9 @@ Ludum Dare 50
 - [ ] Music
 - [ ] Sound effects
 - [ ] Score VFX
-- [ ] VFX for attacks
+- [x] VFX for attacks
 - [ ] Better art / fonts / splash screens
-- [ ] Mechanic to solve the stalemate problem
+- [x] Mechanic to solve the stalemate problem
 
 ## Brainstorming
 Things which feel inevitable:
