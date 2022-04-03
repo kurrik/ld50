@@ -261,15 +261,18 @@ public class StatePlay : GameStateMonoBehavior {
 
   public void TriggerLevelWin() {
     if (currentLevel == levels.Length - 1) {
+      stateGameWon.SetText(string.Format("You scored {0} points!", _score));
       SetGameState(stateGameWon);
     } else {
       currentLevel += 1;
+      stateLevelComplete.SetText(string.Format("You scored {0} points!", _score));
       SetGameState(stateLevelComplete);
       LoadLevel();
     }
   }
 
   public void TriggerLevelLoss() {
+    stateGameOver.SetText(string.Format("You scored {0} points!", _score));
     SetGameState(stateGameOver);
   }
 

@@ -4,6 +4,11 @@ using UnityEngine;
 
 public class StateLevelComplete : GameStateMonoBehavior {
   public const string AdvanceButton = "Trigger";
+  public TMPro.TextMeshProUGUI textBox;
+
+  public void SetText(string text) {
+    textBox.text = text;
+  }
 
   public override void OnCurrentEnter() {
     Time.timeScale = 0.0f;
