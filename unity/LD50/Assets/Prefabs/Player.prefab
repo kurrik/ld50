@@ -47,9 +47,9 @@ MonoBehaviour:
   playerMaxAmountMoved: 60
   playerAmountMovedDecay: 20
   playerSpeed: 0.5
-  attackPowerRegenPerSecond: 0.1
+  attackPowerRegenPerSecond: 0.2
   noAttackColor: {r: 0.25361332, g: 0.74976736, b: 0.9811321, a: 1}
-  attack1Cost: 0.09
+  attack1Cost: 0.19
   attack1Color: {r: 0.46185982, g: 1, b: 0.3150943, a: 1}
   attack2Cost: 0.3
   attack2Color: {r: 1, g: 0.93887115, b: 0.14528298, a: 1}

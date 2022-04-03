@@ -98,34 +98,39 @@ public class Player : MonoBehaviour {
     if (coordinate) {
       switch (_attackPowerInfo.Type) {
         case AttackType.Attack1:
-          coordinate.ClearRadius(_cube, coords, 2);
-          attackPower -= attack1Cost;
-          OnAttack.Invoke();
+          TriggerAttack(coordinate, coords, 2, attack1Cost);
           break;
         case AttackType.Attack2:
-          coordinate.ClearRadius(_cube, coords, 3);
-          attackPower -= attack2Cost;
-          OnAttack.Invoke();
+          TriggerAttack(coordinate, coords, 3, attack2Cost);
           break;
         case AttackType.Attack3:
-          coordinate.ClearRadius(_cube, coords, 4);
-          attackPower -= attack3Cost;
-          OnAttack.Invoke();
+          TriggerAttack(coordinate, coords, 4, attack3Cost);
           break;
         case AttackType.Attack4:
-          coordinate.ClearRadius(_cube, coords, 5);
-          attackPower -= attack4Cost;
-          OnAttack.Invoke();
+          TriggerAttack(coordinate, coords, 5, attack4Cost);
           break;
         default:
-          if (coordinate.SetTemporaryBlockage(_cube, coords, 1)) {
-            attackPower = 0.0f;
-            OnTemporaryBlockage.Invoke();
-          } else {
-            OnFailedAttack.Invoke();
-          }
+          TriggerBlockage(coordinate, coords, 1);
           break;
       }
+    }
+  }
+
+  private void TriggerAttack(GameCoordinate coordinate, GameCubeCoordinates coords, int radius, float cost) {
+    if (coordinate.ClearRadius(_cube, coords, radius)) {
+      attackPower -= cost;
+      OnAttack.Invoke();
+    } else {
+      TriggerBlockage(coordinate, coords, radius);
+    }
+  }
+
+  private void TriggerBlockage(GameCoordinate coordinate, GameCubeCoordinates coords, int radius) {
+    if (coordinate.SetTemporaryBlockage(_cube, coords, 1)) {
+      attackPower = 0.0f;
+      OnTemporaryBlockage.Invoke();
+    } else {
+      OnFailedAttack.Invoke();
     }
   }
 

@@ -285,12 +285,12 @@ public abstract class CubeCoordinates<T> : MonoBehaviour where T : Coordinate {
   }
 
   // Rotates a cube coordinate right by one coordinate
-  public Vector4 RotateCubeCoordinatesRight(Vector3 cube) {
+  public Vector3 RotateCubeCoordinatesRight(Vector3 cube) {
     return new Vector3(-cube.z, -cube.x, -cube.y);
   }
 
   // Rotates a cube coordinate left by one coordinate
-  public Vector4 RotateCubeCoordinatesLeft(Vector3 cube) {
+  public Vector3 RotateCubeCoordinatesLeft(Vector3 cube) {
     return new Vector3(-cube.y, -cube.z, -cube.x);
   }
 

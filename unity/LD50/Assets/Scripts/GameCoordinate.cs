@@ -5,6 +5,7 @@ using System.Collections.Generic;
 public enum GameCoordinateType {
   Empty,
   SpreadAlpha,
+  SpreadBeta,
   Objective,
   Blockage,
   TemporaryBlockage,
@@ -20,6 +21,7 @@ public class GameCoordinate : Coordinate {
   private int tickCount;
   private bool takeDamageOnTick;
   private int hitPoints;
+  private int rotationSteps;
 
   // Initializes the Coordinate given a cube coordinate and world transform position
   public void Init(Vector3 cube, Vector3 position, GameCubeCoordinates coords) {
@@ -29,7 +31,11 @@ public class GameCoordinate : Coordinate {
     if (isObjectivePosition(cube, coords)) {
       SetType(GameCoordinateType.Objective);
     } else if (isStarterCubePosition(cube, coords.radius)) {
-      SetType(GameCoordinateType.SpreadAlpha);
+      if (Random.Range(0.0f, 1.0f) < 0.5f) {
+        SetType(GameCoordinateType.SpreadAlpha);
+      } else {
+        SetType(GameCoordinateType.SpreadBeta);
+      }
     } else if (randomTypeValue < 0.2f) {
       SetType(GameCoordinateType.Blockage);
     } else {
@@ -66,6 +72,9 @@ public class GameCoordinate : Coordinate {
       case GameCoordinateType.SpreadAlpha:
         SpreadAlpha(cube, coords);
         break;
+      case GameCoordinateType.SpreadBeta:
+        SpreadBeta(cube, coords);
+        break;
       default:
         break;
     }
@@ -79,18 +88,42 @@ public class GameCoordinate : Coordinate {
         new Vector3(1.0f, -1.0f, 0.0f),
     };
   public void SpreadAlpha(Vector3 cube, GameCubeCoordinates coords) {
-    foreach (Vector3 offset in _spreadAlphaPattern) {
-      GameCoordinate neighbor = coords.GetCoordinateFromContainer(cube + offset, "all");
-      if (!neighbor) {
+    Spread(cube, _spreadAlphaPattern, coords, GameCoordinateType.SpreadAlpha, 0);
+  }
+
+  private Vector3[] _spreadBetaPattern =
+  {
+        // q, s, r
+        new Vector3(0.0f, 1.0f, -1.0f),
+    };
+  public void SpreadBeta(Vector3 cube, GameCubeCoordinates coords) {
+    rotationSteps = Random.Range(-3, 2);
+    Spread(cube, _spreadBetaPattern, coords, GameCoordinateType.SpreadBeta, rotationSteps);
+  }
+
+  private void Spread(Vector3 cube, Vector3[] pattern, GameCubeCoordinates coords, GameCoordinateType spreadType, int rotate) {
+    foreach (Vector3 offset in pattern) {
+      Vector3 adjustedOffset = offset;
+      if (rotate > 0) {
+        for (int i = 0; i < rotate; i++) {
+          adjustedOffset = coords.RotateCubeCoordinatesRight(adjustedOffset);
+        }
+      } else if (rotate < 0) {
+        for (int i = 0; i < rotate; i++) {
+          adjustedOffset = coords.RotateCubeCoordinatesLeft(adjustedOffset);
+        }
+      }
+      GameCoordinate target = coords.GetCoordinateFromContainer(cube + adjustedOffset, "all");
+      if (!target) {
         continue;
       }
-      switch (neighbor.type) {
+      switch (target.type) {
         case GameCoordinateType.Empty:
-          neighbor.nextType = GameCoordinateType.SpreadAlpha;
+          target.nextType = spreadType;
           break;
         case GameCoordinateType.DamagedTemporaryBlockage:
         case GameCoordinateType.TemporaryBlockage:
-          neighbor.takeDamageOnTick = true;
+          target.takeDamageOnTick = true;
           break;
       }
     }
@@ -104,22 +137,45 @@ public class GameCoordinate : Coordinate {
       if (type == GameCoordinateType.TemporaryBlockage) {
         SetType(GameCoordinateType.DamagedTemporaryBlockage);
       }
-      if (type == GameCoordinateType.DamagedTemporaryBlockage && hitPoints <= 0) {
-        SetType(GameCoordinateType.Empty);
+      if (hitPoints <= 0) {
+        switch (type) {
+          case GameCoordinateType.DamagedTemporaryBlockage:
+            SetType(GameCoordinateType.Empty);
+            break;
+          case GameCoordinateType.SpreadBeta:
+            SetType(GameCoordinateType.Empty);
+            break;
+        }
       }
     }
-    takeDamageOnTick = false;
+    switch (type) {
+      case GameCoordinateType.SpreadBeta:
+        takeDamageOnTick = true;
+        break;
+      default:
+        takeDamageOnTick = false;
+        break;
+    }
   }
 
-  public void ClearRadius(Vector3 cube, GameCubeCoordinates coords, int radius) {
+  public bool ClearRadius(Vector3 cube, GameCubeCoordinates coords, int radius) {
+    bool placed = false;
     List<Vector3> reachableCubes = coords.GetReachableCubes(cube, radius);
     reachableCubes.Add(cube);
     foreach (Vector3 neighborCube in reachableCubes) {
       GameCoordinate neighbor = coords.GetCoordinateFromContainer(neighborCube, "all");
       if (neighbor.type == GameCoordinateType.SpreadAlpha) {
-        neighbor.SetType(GameCoordinateType.Empty);
+        neighbor.SetType(GameCoordinateType.TemporaryBlockage);
+        placed = true;
+      } else if (neighbor.type == GameCoordinateType.SpreadBeta) {
+        neighbor.SetType(GameCoordinateType.TemporaryBlockage);
+        placed = true;
+      } else if (neighbor.type == GameCoordinateType.DamagedTemporaryBlockage) {
+        neighbor.SetType(GameCoordinateType.TemporaryBlockage);
+        placed = true;
       }
     }
+    return placed;
   }
 
   public bool SetTemporaryBlockage(Vector3 cube, GameCubeCoordinates coords, int radius) {
@@ -145,6 +201,10 @@ public class GameCoordinate : Coordinate {
     switch (newType) {
       case GameCoordinateType.SpreadAlpha:
         meshRenderer.material = Gameboard.instance.SpreadAlphaMaterial;
+        break;
+      case GameCoordinateType.SpreadBeta:
+        meshRenderer.material = Gameboard.instance.SpreadBetaMaterial;
+        hitPoints = Gameboard.instance.spreadBetaHitPoints;
         break;
       case GameCoordinateType.Empty:
         meshRenderer.material = Gameboard.instance.EmptyMaterial;

@@ -16,6 +16,7 @@ public class Gameboard : MonoBehaviour {
   public float tickTimeStep = 0.5f;
   public int objectiveRadius = 1;
   public int temporaryBlockageHitPoints = 5;
+  public int spreadBetaHitPoints = 20;
 
   public const string TriggerButton = "Trigger";
 
@@ -24,6 +25,7 @@ public class Gameboard : MonoBehaviour {
   public Material EmptyMaterial;
   public Material ObjectiveMaterial;
   public Material SpreadAlphaMaterial;
+  public Material SpreadBetaMaterial;
   public Material BlockageMaterial;
   public Material TemporaryBlockageMaterial;
   public Material DamagedBlockageMaterial;
