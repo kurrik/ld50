@@ -4,20 +4,22 @@ Ludum Dare 50
 ## TODO
 - [x] Controller wired up
 - [x] Move cursor around
-- [ ] Rate limit attacks
-- [ ] Different kinds of attacks
+- [x] Rate limit attacks
+- [x] Different kinds of attacks
 - [ ] Failure case
 - [ ] Success case?
 - [ ] Level cycling?
 - [ ] Points system
-- [ ] HUD
+- [x] HUD
 - [ ] Music
 - [ ] Sound effects
 - [ ] Visual effects
-- [ ] Camera movement
-- [ ] Camera zoom
+- [x] Camera movement
+- [x] Camera zoom
 - [ ] Splash screen
 - [ ] Better art
+- [ ] Screen shake
+- [ ] Special effects
 
 ## Brainstorming
 Things which feel inevitable:
