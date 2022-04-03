@@ -52,11 +52,13 @@ MonoBehaviour:
   attack1Cost: 0.19
   attack1Color: {r: 0.46185982, g: 1, b: 0.3150943, a: 1}
   attack2Cost: 0.3
-  attack2Color: {r: 1, g: 0.93887115, b: 0.14528298, a: 1}
+  attack2Color: {r: 1, g: 0.77125734, b: 0.02264148, a: 1}
   attack3Cost: 0.5
-  attack3Color: {r: 1, g: 0.16634841, b: 0, a: 1}
+  attack3Color: {r: 1, g: 0, b: 0.32367992, a: 1}
   attack4Cost: 0.7
-  attack4Color: {r: 0.7856045, g: 0, b: 1, a: 1}
+  attack4Color: {r: 0.56765604, g: 0, b: 1, a: 1}
+  attack5Cost: 0.9
+  attack5Color: {r: 1, g: 0, b: 1, a: 1}
   OnFailedAttack:
     m_PersistentCalls:
       m_Calls: []

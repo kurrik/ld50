@@ -13,6 +13,7 @@ public class Gameboard : MonoBehaviour {
   public GameStateManager states;
   public StateSplash stateSplash;
   public StatePlay statePlay;
+  public ObjectiveIcon objectiveIconPrefab;
 
   public Material EmptyMaterial;
   public Material ObjectiveMaterial;
@@ -21,6 +22,8 @@ public class Gameboard : MonoBehaviour {
   public Material BlockageMaterial;
   public Material TemporaryBlockageMaterial;
   public Material DamagedBlockageMaterial;
+
+  public GameObject PooledObjects;
 
   public bool unityEditorShowStartup = false;
   public bool ShowStartup {
@@ -70,6 +73,10 @@ public class Gameboard : MonoBehaviour {
 
   public void TriggerShake() {
     statePlay.TriggerShake();
+  }
+
+  public void TriggerObjectiveIcon(Vector3 position) {
+    statePlay.TriggerObjectiveIcon(position);
   }
 
   private void Awake() {

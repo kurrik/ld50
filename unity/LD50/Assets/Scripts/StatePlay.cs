@@ -12,6 +12,9 @@ public struct LevelInfo {
   public float BlockagePercent;
   public bool UseStarterPositions;
   public float TickTimestep;
+  public int ObjectiveIntervalTicks;
+  public int ObjectiveIntervalCount;
+  public float objectiveStartingElevation;
   public CoordinateConfig[] CoordinateConfigs;
 }
 
@@ -37,6 +40,9 @@ public class StatePlay : GameStateMonoBehavior {
       BlockagePercent = 0.1f,
       UseStarterPositions = false,
       TickTimestep = 1.0f,
+      ObjectiveIntervalCount = 5,
+      ObjectiveIntervalTicks = 5,
+      objectiveStartingElevation = 5.0f,
       CoordinateConfigs = new CoordinateConfig[] {
         new CoordinateConfig() { Cube = new Vector3(0.0f,-10.0f,10.0f), Type = GameCoordinateType.SpreadAlpha },
         new CoordinateConfig() { Cube = new Vector3(-10.0f,10.0f,0.0f), Type = GameCoordinateType.SpreadAlpha },
@@ -49,6 +55,9 @@ public class StatePlay : GameStateMonoBehavior {
       BlockagePercent = 0.2f,
       UseStarterPositions = false,
       TickTimestep = 0.5f,
+      ObjectiveIntervalCount = 5,
+      ObjectiveIntervalTicks = 30,
+      objectiveStartingElevation = 2.0f,
       CoordinateConfigs = new CoordinateConfig[] {
         new CoordinateConfig() { Cube = new Vector3(20.0f,-20.0f,0.0f), Type = GameCoordinateType.SpreadAlpha },
         new CoordinateConfig() { Cube = new Vector3(0.0f,-20.0f,20.0f), Type = GameCoordinateType.SpreadBeta },
@@ -102,6 +111,7 @@ public class StatePlay : GameStateMonoBehavior {
     _coords.info = level;
     _coords.Construct(level.BoardSize);
     LoadPlayer();
+    ObjectiveIcon.DisableAllIcons();
   }
 
   private void LoadPlayer() {
@@ -122,7 +132,7 @@ public class StatePlay : GameStateMonoBehavior {
     bool seenEnemyPiece = false;
     foreach (Vector3 cube in _coords.GetCubesFromContainer("all")) {
       GameCoordinate coord = _coords.GetCoordinateFromContainer(cube, "all");
-      coord.ApplyTick();
+      coord.ApplyTick(_coords);
       if (coord.IsEnemyPiece()) {
         seenEnemyPiece = true;
       }
@@ -140,6 +150,7 @@ public class StatePlay : GameStateMonoBehavior {
     switch (type) {
       case AttackType.Attack3:
       case AttackType.Attack4:
+      case AttackType.Attack5:
         TriggerShake();
         break;
     }
@@ -183,6 +194,15 @@ public class StatePlay : GameStateMonoBehavior {
       if (Input.GetKeyDown(KeyCode.F5)) {
         TriggerShake();
       }
+      if (Input.GetKeyDown(KeyCode.F6)) {
+        foreach (Vector3 cube in _coords.GetCubesFromContainer("all")) {
+          GameCoordinate coord = _coords.GetCoordinateFromContainer(cube, "all");
+          if (coord.type == GameCoordinateType.Objective) {
+            TriggerObjectiveIcon(coord.gameObject.transform.position);
+          }
+        }
+      }
+
       if (Input.GetMouseButtonDown(1)) {
         Vector3 worldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -241,5 +261,10 @@ public class StatePlay : GameStateMonoBehavior {
 
   public void TriggerShake() {
     playerCamera.TriggerShake();
+  }
+
+  public void TriggerObjectiveIcon(Vector3 position) {
+    ObjectiveIcon icon = ObjectiveIcon.GetUnusedInstance();
+    icon.Init(position);
   }
 }

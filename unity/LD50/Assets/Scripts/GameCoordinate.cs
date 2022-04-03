@@ -21,6 +21,8 @@ public class GameCoordinate : Coordinate {
   private int tickCount;
   private bool takeDamageOnTick;
   private int hitPoints;
+  private int objectiveRemainingCount;
+  private float objectiveStartingElevation;
   private int rotationSteps;
   private int pointsValue;
 
@@ -33,19 +35,19 @@ public class GameCoordinate : Coordinate {
     CoordinateConfig? presetConfig = GetPresetCoordinateConfig(cube, coords);
     if (presetConfig != null) {
       CoordinateConfig cfg = (CoordinateConfig)presetConfig;
-      SetType(cfg.Type);
+      SetType(cfg.Type, info);
     } else if (isObjectivePosition(cube, coords)) {
-      SetType(GameCoordinateType.Objective);
+      SetType(GameCoordinateType.Objective, info);
     } else if (info.UseStarterPositions && isStarterCubePosition(cube, coords)) {
       if (Random.Range(0.0f, 1.0f) < 0.5f) {
-        SetType(GameCoordinateType.SpreadAlpha);
+        SetType(GameCoordinateType.SpreadAlpha, info);
       } else {
-        SetType(GameCoordinateType.SpreadBeta);
+        SetType(GameCoordinateType.SpreadBeta, info);
       }
     } else if (randomTypeValue < info.BlockagePercent) {
-      SetType(GameCoordinateType.Blockage);
+      SetType(GameCoordinateType.Blockage, info);
     } else {
-      SetType(GameCoordinateType.Empty);
+      SetType(GameCoordinateType.Empty, info);
     }
   }
 
@@ -96,8 +98,26 @@ public class GameCoordinate : Coordinate {
       case GameCoordinateType.SpreadBeta:
         SpreadBeta(cube, coords);
         break;
+      case GameCoordinateType.Objective:
+        if (tickCount >= coords.info.ObjectiveIntervalTicks) {
+          tickCount = 0;
+          DecayObjective(cube, coords);
+        }
+        break;
       default:
         break;
+    }
+  }
+
+  private void DecayObjective(Vector3 cube, GameCubeCoordinates coords) {
+    objectiveRemainingCount -= 1;
+    Gameboard.instance.TriggerObjectiveIcon(transform.position);
+    float pct = (float)objectiveRemainingCount / (float)coords.info.ObjectiveIntervalCount;
+    Vector3 newPosition = transform.position;
+    newPosition.y = pct * coords.info.objectiveStartingElevation;
+    transform.position = newPosition;
+    if (objectiveRemainingCount <= 0) {
+      Gameboard.instance.TriggerWin();
     }
   }
 
@@ -151,14 +171,14 @@ public class GameCoordinate : Coordinate {
     }
   }
 
-  public void ApplyTick() {
+  public void ApplyTick(GameCubeCoordinates coords) {
     if (nextType != null) {
-      SetType((GameCoordinateType)nextType);
+      SetType((GameCoordinateType)nextType, coords.info);
     } else if (takeDamageOnTick) {
       hitPoints -= 1;
       switch (type) {
         case GameCoordinateType.TemporaryBlockage:
-          SetType(GameCoordinateType.DamagedTemporaryBlockage);
+          SetType(GameCoordinateType.DamagedTemporaryBlockage, coords.info);
           break;
         case GameCoordinateType.Objective:
           Gameboard.instance.TriggerLoss();
@@ -167,10 +187,10 @@ public class GameCoordinate : Coordinate {
       if (hitPoints <= 0) {
         switch (type) {
           case GameCoordinateType.DamagedTemporaryBlockage:
-            SetType(GameCoordinateType.Empty);
+            SetType(GameCoordinateType.Empty, coords.info);
             break;
           case GameCoordinateType.SpreadBeta:
-            SetType(GameCoordinateType.Empty);
+            SetType(GameCoordinateType.Empty, coords.info);
             break;
         }
       }
@@ -198,20 +218,20 @@ public class GameCoordinate : Coordinate {
         case GameCoordinateType.SpreadAlpha:
         case GameCoordinateType.SpreadBeta:
           if (distance == radius) {
-            neighbor.SetType(GameCoordinateType.TemporaryBlockage);
+            neighbor.SetType(GameCoordinateType.TemporaryBlockage, coords.info);
           } else {
-            neighbor.SetType(GameCoordinateType.Empty);
+            neighbor.SetType(GameCoordinateType.Empty, coords.info);
           }
           placed = true;
           break;
         case GameCoordinateType.Empty:
           if (distance == radius) {
-            neighbor.SetType(GameCoordinateType.TemporaryBlockage);
+            neighbor.SetType(GameCoordinateType.TemporaryBlockage, coords.info);
             placed = true;
           }
           break;
         case GameCoordinateType.DamagedTemporaryBlockage:
-          neighbor.SetType(GameCoordinateType.TemporaryBlockage);
+          neighbor.SetType(GameCoordinateType.TemporaryBlockage, coords.info);
           placed = true;
           break;
       }
@@ -223,6 +243,13 @@ public class GameCoordinate : Coordinate {
     return placed;
   }
 
+  public bool ClearStar(Vector3 cube, GameCubeCoordinates coords) {
+    bool placed = false;
+    int score = 0;
+    Gameboard.instance.TriggerScoreIncrement(cube, score);
+    return placed;
+  }
+
   public bool SetTemporaryBlockage(Vector3 cube, GameCubeCoordinates coords, int radius) {
     bool placed = false;
     List<Vector3> reachableCubes = coords.GetReachableCubes(cube, radius);
@@ -230,14 +257,14 @@ public class GameCoordinate : Coordinate {
     foreach (Vector3 neighborCube in reachableCubes) {
       GameCoordinate neighbor = coords.GetCoordinateFromContainer(neighborCube, "all");
       if (neighbor.type == GameCoordinateType.Empty) {
-        neighbor.SetType(GameCoordinateType.TemporaryBlockage);
+        neighbor.SetType(GameCoordinateType.TemporaryBlockage, coords.info);
         placed = true;
       }
     }
     return placed;
   }
 
-  private void SetType(GameCoordinateType newType) {
+  private void SetType(GameCoordinateType newType, LevelInfo info) {
     bool visible = true;
     float elevation = 0.0f;
     if (newType == type) {
@@ -264,7 +291,8 @@ public class GameCoordinate : Coordinate {
         break;
       case GameCoordinateType.Objective:
         meshRenderer.material = Gameboard.instance.ObjectiveMaterial;
-        elevation = 2.0f;
+        elevation = info.objectiveStartingElevation;
+        objectiveRemainingCount = info.ObjectiveIntervalCount;
         break;
       case GameCoordinateType.TemporaryBlockage:
         meshRenderer.material = Gameboard.instance.TemporaryBlockageMaterial;
@@ -305,4 +333,3 @@ public class GameCoordinate : Coordinate {
     meshRenderer.enabled = true;
   }
 }
-

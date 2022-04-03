@@ -9,6 +9,7 @@ public enum AttackType {
   Attack2,
   Attack3,
   Attack4,
+  Attack5,
 }
 
 public struct AttackPowerInfo {
@@ -26,7 +27,10 @@ public class Player : MonoBehaviour {
     get { return _attackPowerInfo.Amount; }
     set {
       _attackPowerInfo.Amount = value;
-      if (value > attack4Cost) {
+      if (value > attack5Cost) {
+        _attackPowerInfo.Color = attack5Color;
+        _attackPowerInfo.Type = AttackType.Attack5;
+      } else if (value > attack4Cost) {
         _attackPowerInfo.Color = attack4Color;
         _attackPowerInfo.Type = AttackType.Attack4;
       } else if (value > attack3Cost) {
@@ -64,6 +68,8 @@ public class Player : MonoBehaviour {
   public Color attack3Color = Color.yellow;
   public float attack4Cost = 0.5f;
   public Color attack4Color = Color.red;
+  public float attack5Cost = 0.9f;
+  public Color attack5Color = Color.magenta;
 
   public UnityEvent OnFailedAttack = new UnityEvent();
   public UnityEvent<AttackType> OnAttack = new UnityEvent<AttackType>();
@@ -109,6 +115,9 @@ public class Player : MonoBehaviour {
         case AttackType.Attack4:
           TriggerAttack(coordinate, coords, 7, attack4Cost, _attackPowerInfo.Type);
           break;
+        case AttackType.Attack5:
+          TriggerAttack(coordinate, coords, 7, attack4Cost, _attackPowerInfo.Type);
+          break;
         default:
           TriggerBlockage(coordinate, coords, 1);
           break;
@@ -122,6 +131,13 @@ public class Player : MonoBehaviour {
       OnAttack.Invoke(type);
     } else {
       TriggerBlockage(coordinate, coords, radius);
+    }
+  }
+
+  private void TriggerStarAttack(GameCoordinate coordinate, GameCubeCoordinates coords, int radius, float cost, AttackType type) {
+    if (coordinate.ClearStar(_cube, coords)) {
+      attackPower -= cost;
+      OnAttack.Invoke(type);
     }
   }
 
