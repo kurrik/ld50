@@ -43,9 +43,6 @@ public class Gameboard : MonoBehaviour {
     }
   }
 
-  public void End() {
-  }
-
   public void Quit() {
 #if UNITY_EDITOR
     UnityEditor.EditorApplication.isPlaying = false;
@@ -55,6 +52,7 @@ public class Gameboard : MonoBehaviour {
   }
 
   public void Reload() {
+    Time.timeScale = 1.0f;
     SceneManager.LoadScene(SceneManager.GetActiveScene().name);
   }
 

@@ -13,6 +13,7 @@ public class PlayerCamera : MonoBehaviour {
   private Vector3 _velocity;
   private float _shakeElapsed;
   private bool _isShaking;
+  private bool _isInitializing;
 
   public Vector3 playerOffset = new Vector3(0.0f, 128.0f, -90.0f);
   public float cameraSpeed = 0.1f;
@@ -22,6 +23,7 @@ public class PlayerCamera : MonoBehaviour {
 
   public void Init(Player player) {
     _isShaking = false;
+    _isInitializing = true;
     _player = player;
     _camera = GetComponent<Camera>();
     _zoomLevel = 1.0f;
@@ -73,6 +75,11 @@ public class PlayerCamera : MonoBehaviour {
       _zoomLevel = Mathf.Clamp(_player.amountMoved / _player.playerMaxAmountMoved, 0.0f, 1.0f) + 0.5f;
       // Debug.LogFormat("ZoomLevel {0}", _zoomLevel);
       _targetPosition = _player.transform.position + playerOffset * _zoomLevel;
+
+      if (_isInitializing) {
+        transform.position = _targetPosition;
+        _isInitializing = false;
+      }
     }
   }
 }
