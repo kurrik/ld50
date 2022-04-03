@@ -19,7 +19,6 @@ public class StateSplash : GameStateMonoBehavior {
   }
 
   public override void StateUpdate(GameStateManager states) {
-    Debug.LogFormat("Update");
     if (Input.GetButtonUp(AdvanceButton)) {
       Advance();
     }
