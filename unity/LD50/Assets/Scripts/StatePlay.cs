@@ -150,8 +150,11 @@ public class StatePlay : GameStateMonoBehavior {
     switch (type) {
       case AttackType.Attack3:
       case AttackType.Attack4:
-      case AttackType.Attack5:
         TriggerShake();
+        break;
+      case AttackType.Attack5:
+        Debug.LogFormat("Attack 5 shake");
+        TriggerShake(durationBoost: 0.2f, magnitudeBoost: 0.1f);
         break;
     }
   }
@@ -259,8 +262,13 @@ public class StatePlay : GameStateMonoBehavior {
     HUD.SetScore(_score);
   }
 
-  public void TriggerShake() {
-    playerCamera.TriggerShake();
+  public void TriggerShake(float magnitudeBoost = 0.0f, float durationBoost = 0.0f) {
+    StartCoroutine(HandleShake(magnitudeBoost, durationBoost));
+  }
+
+  private IEnumerator HandleShake(float magnitudeBoost = 0.0f, float durationBoost = 0.0f) {
+    yield return new WaitForEndOfFrame();
+    playerCamera.TriggerShake(magnitudeBoost, durationBoost);
   }
 
   public void TriggerObjectiveIcon(Vector3 position) {

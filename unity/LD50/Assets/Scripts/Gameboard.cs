@@ -8,6 +8,7 @@ public class Gameboard : MonoBehaviour {
 
   public int objectiveRadius = 1;
   public int temporaryBlockageHitPoints = 5;
+  public int superTemporaryBlockageHitPoints = 30;
   public int spreadBetaHitPoints = 5;
 
   public GameStateManager states;

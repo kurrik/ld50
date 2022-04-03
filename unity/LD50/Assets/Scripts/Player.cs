@@ -116,7 +116,7 @@ public class Player : MonoBehaviour {
           TriggerAttack(coordinate, coords, 7, attack4Cost, _attackPowerInfo.Type);
           break;
         case AttackType.Attack5:
-          TriggerAttack(coordinate, coords, 7, attack4Cost, _attackPowerInfo.Type);
+          TriggerStarAttack(coordinate, coords, attack5Cost, _attackPowerInfo.Type);
           break;
         default:
           TriggerBlockage(coordinate, coords, 1);
@@ -134,7 +134,7 @@ public class Player : MonoBehaviour {
     }
   }
 
-  private void TriggerStarAttack(GameCoordinate coordinate, GameCubeCoordinates coords, int radius, float cost, AttackType type) {
+  private void TriggerStarAttack(GameCoordinate coordinate, GameCubeCoordinates coords, float cost, AttackType type) {
     if (coordinate.ClearStar(_cube, coords)) {
       attackPower -= cost;
       OnAttack.Invoke(type);

@@ -14,6 +14,8 @@ public class PlayerCamera : MonoBehaviour {
   private float _shakeElapsed;
   private bool _isShaking;
   private bool _isInitializing;
+  private float _magnitudeBoost;
+  private float _durationBoost;
 
   public Vector3 playerOffset = new Vector3(0.0f, 128.0f, -90.0f);
   public float cameraSpeed = 0.1f;
@@ -38,9 +40,12 @@ public class PlayerCamera : MonoBehaviour {
     _zoomLevel = 1.0f;
   }
 
-  public void TriggerShake() {
+  public void TriggerShake(float magnitudeBoost = 0.0f, float durationBoost = 0.0f) {
     _isShaking = true;
     _shakeElapsed = 0.0f;
+    _magnitudeBoost = magnitudeBoost;
+    _durationBoost = durationBoost;
+    transform.rotation = _startRotation;
   }
 
   void Start() {
@@ -52,15 +57,17 @@ public class PlayerCamera : MonoBehaviour {
     //Debug.LogFormat("Going from {0} to {1}", transform.position, _targetPosition);
     transform.position = Vector3.SmoothDamp(transform.position, _targetPosition, ref _velocity, cameraSpeed);
     if (_isShaking) {
+      float duration = shakeDuration + _durationBoost;
+      float magnitude = shakeMagnitude + _magnitudeBoost;
       _shakeElapsed += Time.deltaTime;
-      if (_shakeElapsed >= shakeDuration) {
+      if (_shakeElapsed >= duration) {
         _shakeElapsed = 0.0f;
         _isShaking = false;
         transform.rotation = _startRotation;
       } else {
-        float pct = _shakeElapsed / shakeDuration;
+        float pct = _shakeElapsed / duration;
         //float magnitude = Mathf.SmoothStep(shakeMagnitude, 0.0f, pct);
-        float amount = Mathf.Sin(pct * shakeFrequency * 2.0f * Mathf.PI) * shakeMagnitude;
+        float amount = Mathf.Sin(pct * shakeFrequency * 2.0f * Mathf.PI) * magnitude;
         transform.Rotate(Vector3.right, amount, Space.Self);
       }
     }

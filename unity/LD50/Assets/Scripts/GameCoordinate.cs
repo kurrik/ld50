@@ -9,6 +9,7 @@ public enum GameCoordinateType {
   Objective,
   Blockage,
   TemporaryBlockage,
+  SuperTemporaryBlockage,
   DamagedTemporaryBlockage,
 }
 
@@ -212,6 +213,9 @@ public class GameCoordinate : Coordinate {
     reachableCubes.Add(cube);
     foreach (Vector3 neighborCube in reachableCubes) {
       GameCoordinate neighbor = coords.GetCoordinateFromContainer(neighborCube, "all");
+      if (!neighbor) {
+        continue;
+      }
       int distance = (int)coords.GetDistanceBetweenTwoCubes(cube, neighborCube);
       int neighborValue = neighbor.pointsValue;
       switch (neighbor.type) {
@@ -243,11 +247,62 @@ public class GameCoordinate : Coordinate {
     return placed;
   }
 
+  private Vector3[] _starCoords =
+  {
+        // q, s, r
+        new Vector3(1.0f, -1.0f, 0.0f),
+        new Vector3(-1.0f, 1.0f, 0.0f),
+        new Vector3(0.0f, 1.0f, -1.0f),
+        new Vector3(0.0f, -1.0f, 1.0f),
+        new Vector3(1.0f, 0.0f, -1.0f),
+        new Vector3(-1.0f, 0.0f, 1.0f),
+    };
   public bool ClearStar(Vector3 cube, GameCubeCoordinates coords) {
+    StartCoroutine(HandleClearStar(cube, coords));
+    return true;
+  }
+
+  private IEnumerator HandleClearStar(Vector3 cube, GameCubeCoordinates coords) {
     bool placed = false;
     int score = 0;
+    LevelInfo info = coords.info;
+    float r = info.BoardSize;
+    List<Vector3> cubes = new List<Vector3>() { cube };
+    foreach (Vector3 target in _starCoords) {
+      cubes.AddRange(coords.GetPathBetweenTwoCubes(cube, target * r));
+      yield return new WaitForEndOfFrame();
+    }
+    cubes.AddRange(coords.GetSpiralCubes(cube, (int)r / 2));
+    foreach (Vector3 neighborCube in cubes) {
+      GameCoordinate neighbor = coords.GetCoordinateFromContainer(neighborCube, "all");
+      if (!neighbor) {
+        continue;
+      }
+      int neighborValue = neighbor.pointsValue;
+      switch (neighbor.type) {
+        case GameCoordinateType.SpreadAlpha:
+        case GameCoordinateType.SpreadBeta:
+          neighbor.SetType(GameCoordinateType.SuperTemporaryBlockage, coords.info);
+          placed = true;
+          break;
+        case GameCoordinateType.Empty:
+          neighbor.SetType(GameCoordinateType.SuperTemporaryBlockage, coords.info);
+          placed = true;
+          break;
+        case GameCoordinateType.TemporaryBlockage:
+          neighbor.SetType(GameCoordinateType.SuperTemporaryBlockage, coords.info);
+          placed = true;
+          break;
+        case GameCoordinateType.DamagedTemporaryBlockage:
+          neighbor.SetType(GameCoordinateType.SuperTemporaryBlockage, coords.info);
+          placed = true;
+          break;
+      }
+      if (placed) {
+        score += neighborValue;
+      }
+    }
     Gameboard.instance.TriggerScoreIncrement(cube, score);
-    return placed;
   }
 
   public bool SetTemporaryBlockage(Vector3 cube, GameCubeCoordinates coords, int radius) {
@@ -298,6 +353,12 @@ public class GameCoordinate : Coordinate {
         meshRenderer.material = Gameboard.instance.TemporaryBlockageMaterial;
         elevation = 1.0f;
         hitPoints = Gameboard.instance.temporaryBlockageHitPoints;
+        break;
+      case GameCoordinateType.SuperTemporaryBlockage:
+        meshRenderer.material = Gameboard.instance.TemporaryBlockageMaterial;
+        elevation = 2.0f;
+        hitPoints = Gameboard.instance.superTemporaryBlockageHitPoints;
+        newType = GameCoordinateType.TemporaryBlockage;
         break;
       case GameCoordinateType.DamagedTemporaryBlockage:
         meshRenderer.material = Gameboard.instance.DamagedBlockageMaterial;

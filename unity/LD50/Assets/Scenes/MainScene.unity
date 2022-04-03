@@ -3071,6 +3071,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectiveRadius: 1
   temporaryBlockageHitPoints: 5
+  superTemporaryBlockageHitPoints: 30
   spreadBetaHitPoints: 5
   stateSplash: {fileID: 1069842144}
   statePlay: {fileID: 1681676748}
