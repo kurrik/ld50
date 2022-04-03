@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class HUD : MonoBehaviour {
   public TMPro.TextMeshProUGUI scoreText;
+  public TMPro.TextMeshProUGUI remainingText;
   public Image warningIcon;
   public float warningIconDuration = 1.0f;
 
@@ -16,10 +17,15 @@ public class HUD : MonoBehaviour {
   public void Start() {
     SetScore(0);
     warningIcon.gameObject.SetActive(false);
+    SetRemaining("");
   }
 
   public void SetScore(int amount) {
     _realScore = amount;
+  }
+
+  public void SetRemaining(string text) {
+    remainingText.text = text;
   }
 
   public void ShowWarningIcon() {

@@ -112,6 +112,7 @@ public class StatePlay : GameStateMonoBehavior {
     _coords.Construct(level.BoardSize);
     LoadPlayer();
     ObjectiveIcon.DisableAllIcons();
+    HUD.SetRemaining("");
   }
 
   private void LoadPlayer() {
@@ -129,6 +130,9 @@ public class StatePlay : GameStateMonoBehavior {
       GameCoordinate coord = _coords.GetCoordinateFromContainer(cube, "all");
       coord.Tick(cube, _coords);
     }
+    int objectiveRemainingCount = 0;
+    int tickCount = 0;
+    bool seenObjective = false;
     bool seenEnemyPiece = false;
     foreach (Vector3 cube in _coords.GetCubesFromContainer("all")) {
       GameCoordinate coord = _coords.GetCoordinateFromContainer(cube, "all");
@@ -136,9 +140,19 @@ public class StatePlay : GameStateMonoBehavior {
       if (coord.IsEnemyPiece()) {
         seenEnemyPiece = true;
       }
+      if (coord.type == GameCoordinateType.Objective) {
+        seenObjective = true;
+        objectiveRemainingCount = Mathf.Max(objectiveRemainingCount, coord.ObjectiveRemainingCount);
+        tickCount = Mathf.Max(tickCount, coord.TickCount);
+      }
     }
     if (!seenEnemyPiece) {
       TriggerLevelWin();
+    }
+    if (!seenObjective) {
+      TriggerLevelWin();
+    } else {
+      HUD.SetRemaining(string.Format("{0}.{1}", objectiveRemainingCount, _coords.info.ObjectiveIntervalTicks - tickCount));
     }
   }
 

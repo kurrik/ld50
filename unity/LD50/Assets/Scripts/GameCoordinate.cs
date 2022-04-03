@@ -27,6 +27,14 @@ public class GameCoordinate : Coordinate {
   private int rotationSteps;
   private int pointsValue;
 
+  public int ObjectiveRemainingCount {
+    get { return objectiveRemainingCount; }
+  }
+
+  public int TickCount {
+    get { return tickCount; }
+  }
+
   // Initializes the Coordinate given a cube coordinate and world transform position
   public void Init(Vector3 cube, Vector3 position, GameCubeCoordinates coords) {
     base.Init(cube, position);
