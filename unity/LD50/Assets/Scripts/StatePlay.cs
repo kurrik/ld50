@@ -136,8 +136,13 @@ public class StatePlay : GameStateMonoBehavior {
     // Debug.LogFormat("Failed attack!");
   }
 
-  private void OnAttack() {
-    // Debug.LogFormat("Attack!");
+  private void OnAttack(AttackType type) {
+    switch (type) {
+      case AttackType.Attack3:
+      case AttackType.Attack4:
+        TriggerShake();
+        break;
+    }
   }
 
   private void OnAttackPowerUpdate(AttackPowerInfo info) {
@@ -174,6 +179,9 @@ public class StatePlay : GameStateMonoBehavior {
       }
       if (Input.GetKeyDown(KeyCode.F3)) {
         TriggerLevelLoss();
+      }
+      if (Input.GetKeyDown(KeyCode.F5)) {
+        TriggerShake();
       }
       if (Input.GetMouseButtonDown(1)) {
         Vector3 worldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -225,6 +233,13 @@ public class StatePlay : GameStateMonoBehavior {
 
   public void TriggerScoreIncrement(Vector3 cube, int amount) {
     _score += amount;
+    if (amount > 10) {
+      TriggerShake();
+    }
     HUD.SetScore(_score);
+  }
+
+  public void TriggerShake() {
+    playerCamera.TriggerShake();
   }
 }

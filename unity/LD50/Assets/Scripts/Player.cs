@@ -66,7 +66,7 @@ public class Player : MonoBehaviour {
   public Color attack4Color = Color.red;
 
   public UnityEvent OnFailedAttack = new UnityEvent();
-  public UnityEvent OnAttack = new UnityEvent();
+  public UnityEvent<AttackType> OnAttack = new UnityEvent<AttackType>();
   public UnityEvent<AttackPowerInfo> OnAttackPowerUpdate = new UnityEvent<AttackPowerInfo>();
   public UnityEvent OnTemporaryBlockage = new UnityEvent();
 
@@ -98,16 +98,16 @@ public class Player : MonoBehaviour {
     if (coordinate) {
       switch (_attackPowerInfo.Type) {
         case AttackType.Attack1:
-          TriggerAttack(coordinate, coords, 2, attack1Cost);
+          TriggerAttack(coordinate, coords, 2, attack1Cost, _attackPowerInfo.Type);
           break;
         case AttackType.Attack2:
-          TriggerAttack(coordinate, coords, 3, attack2Cost);
+          TriggerAttack(coordinate, coords, 3, attack2Cost, _attackPowerInfo.Type);
           break;
         case AttackType.Attack3:
-          TriggerAttack(coordinate, coords, 5, attack3Cost);
+          TriggerAttack(coordinate, coords, 5, attack3Cost, _attackPowerInfo.Type);
           break;
         case AttackType.Attack4:
-          TriggerAttack(coordinate, coords, 7, attack4Cost);
+          TriggerAttack(coordinate, coords, 7, attack4Cost, _attackPowerInfo.Type);
           break;
         default:
           TriggerBlockage(coordinate, coords, 1);
@@ -116,10 +116,10 @@ public class Player : MonoBehaviour {
     }
   }
 
-  private void TriggerAttack(GameCoordinate coordinate, GameCubeCoordinates coords, int radius, float cost) {
+  private void TriggerAttack(GameCoordinate coordinate, GameCubeCoordinates coords, int radius, float cost, AttackType type) {
     if (coordinate.ClearRadius(_cube, coords, radius)) {
       attackPower -= cost;
-      OnAttack.Invoke();
+      OnAttack.Invoke(type);
     } else {
       TriggerBlockage(coordinate, coords, radius);
     }

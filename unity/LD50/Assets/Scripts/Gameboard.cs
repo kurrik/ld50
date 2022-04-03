@@ -70,6 +70,10 @@ public class Gameboard : MonoBehaviour {
     statePlay.TriggerScoreIncrement(cube, amount);
   }
 
+  public void TriggerShake() {
+    statePlay.TriggerShake();
+  }
+
   private void Awake() {
     if (instance == null) {
       instance = this;
