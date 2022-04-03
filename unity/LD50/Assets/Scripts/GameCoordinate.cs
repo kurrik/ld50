@@ -213,9 +213,6 @@ public class GameCoordinate : Coordinate {
     reachableCubes.Add(cube);
     foreach (Vector3 neighborCube in reachableCubes) {
       GameCoordinate neighbor = coords.GetCoordinateFromContainer(neighborCube, "all");
-      if (!neighbor) {
-        continue;
-      }
       int distance = (int)coords.GetDistanceBetweenTwoCubes(cube, neighborCube);
       int neighborValue = neighbor.pointsValue;
       switch (neighbor.type) {

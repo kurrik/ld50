@@ -143,7 +143,7 @@ public class StatePlay : GameStateMonoBehavior {
   }
 
   private void OnFailedAttack() {
-    // Debug.LogFormat("Failed attack!");
+    HUD.ShowWarningIcon();
   }
 
   private void OnAttack(AttackType type) {
