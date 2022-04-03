@@ -104,10 +104,10 @@ public class Player : MonoBehaviour {
           TriggerAttack(coordinate, coords, 3, attack2Cost);
           break;
         case AttackType.Attack3:
-          TriggerAttack(coordinate, coords, 4, attack3Cost);
+          TriggerAttack(coordinate, coords, 5, attack3Cost);
           break;
         case AttackType.Attack4:
-          TriggerAttack(coordinate, coords, 5, attack4Cost);
+          TriggerAttack(coordinate, coords, 7, attack4Cost);
           break;
         default:
           TriggerBlockage(coordinate, coords, 1);

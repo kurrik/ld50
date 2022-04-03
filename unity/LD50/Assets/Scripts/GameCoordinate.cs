@@ -164,15 +164,27 @@ public class GameCoordinate : Coordinate {
     reachableCubes.Add(cube);
     foreach (Vector3 neighborCube in reachableCubes) {
       GameCoordinate neighbor = coords.GetCoordinateFromContainer(neighborCube, "all");
-      if (neighbor.type == GameCoordinateType.SpreadAlpha) {
-        neighbor.SetType(GameCoordinateType.TemporaryBlockage);
-        placed = true;
-      } else if (neighbor.type == GameCoordinateType.SpreadBeta) {
-        neighbor.SetType(GameCoordinateType.TemporaryBlockage);
-        placed = true;
-      } else if (neighbor.type == GameCoordinateType.DamagedTemporaryBlockage) {
-        neighbor.SetType(GameCoordinateType.TemporaryBlockage);
-        placed = true;
+      int distance = (int)coords.GetDistanceBetweenTwoCubes(cube, neighborCube);
+      switch (neighbor.type) {
+        case GameCoordinateType.SpreadAlpha:
+        case GameCoordinateType.SpreadBeta:
+          if (distance == radius) {
+            neighbor.SetType(GameCoordinateType.TemporaryBlockage);
+          } else {
+            neighbor.SetType(GameCoordinateType.Empty);
+          }
+          placed = true;
+          break;
+        case GameCoordinateType.Empty:
+          if (distance == radius) {
+            neighbor.SetType(GameCoordinateType.TemporaryBlockage);
+            placed = true;
+          }
+          break;
+        case GameCoordinateType.DamagedTemporaryBlockage:
+          neighbor.SetType(GameCoordinateType.TemporaryBlockage);
+          placed = true;
+          break;
       }
     }
     return placed;
