@@ -16,10 +16,10 @@ public class StatePlay : GameStateMonoBehavior {
   public const string MenuButton = "Menu";
   public HUD HUD;
 
-  // public GameLevelCompletedState gameLevelCompletedState;
-  // public GameCompletedState gameCompletedState;
-  // public GameEndState gameEndState;
-  // public GamePauseState gamePauseState;
+  public StateMenu stateMenu;
+  public StateLevelComplete stateLevelComplete;
+  public StateTerminal stateGameOver;
+  public StateTerminal stateGameWon;
 
   private int currentLevel = 0;
   private LevelInfo[] levels = {
@@ -31,17 +31,12 @@ public class StatePlay : GameStateMonoBehavior {
     },
   };
   private LevelInfo level { get => levels[currentLevel]; }
-  private GameStateManager states;
 
   private void Start() {
-  }
-
-  public override void Register(GameStateManager s) {
-    states = s;
-  }
-
-  public override void Unregister(GameStateManager s) {
-    states = null;
+    stateMenu.gameObject.SetActive(false);
+    stateLevelComplete.gameObject.SetActive(false);
+    stateGameOver.gameObject.SetActive(false);
+    stateGameWon.gameObject.SetActive(false);
   }
 
   public override void OnCurrentEnter() {
@@ -53,15 +48,20 @@ public class StatePlay : GameStateMonoBehavior {
   }
 
   public override void StateUpdate(GameStateManager states) {
+    if (Input.GetButtonUp(MenuButton)) {
+      stateMenu.SetText("Neat");
+      SetGameState(stateMenu);
+    }
   }
 
   public override void StateFixedUpdate(GameStateManager states) {
   }
 
   private void SetGameState(GameStateMonoBehavior state) {
-    state.gameObject.SetActive(true);
-    if (states != null) {
-      states.PushState(state);
+    if (stateManager != null) {
+      state.gameObject.SetActive(true);
+      Debug.LogFormat("Menu enabled");
+      stateManager.PushState(state);
     }
   }
 }

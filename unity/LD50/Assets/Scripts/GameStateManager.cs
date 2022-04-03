@@ -10,13 +10,21 @@ public interface IGameState {
   void OnCurrentExit();
 }
 
-public abstract class GameStateMonoBehavior : MonoBehaviour, IGameState {
-  public abstract void OnCurrentEnter();
-  public abstract void OnCurrentExit();
-  public abstract void Register(GameStateManager states);
-  public abstract void StateUpdate(GameStateManager states);
-  public abstract void StateFixedUpdate(GameStateManager states);
-  public abstract void Unregister(GameStateManager states);
+public class GameStateMonoBehavior : MonoBehaviour, IGameState {
+  protected GameStateManager stateManager;
+
+  public virtual void Register(GameStateManager states) {
+    stateManager = states;
+  }
+
+  public virtual void Unregister(GameStateManager states) {
+    stateManager = null;
+  }
+
+  public virtual void StateUpdate(GameStateManager states) { }
+  public virtual void StateFixedUpdate(GameStateManager states) { }
+  public virtual void OnCurrentEnter() { }
+  public virtual void OnCurrentExit() { }
 }
 
 public class GameStateManager {

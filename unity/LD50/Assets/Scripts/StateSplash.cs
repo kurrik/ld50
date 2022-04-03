@@ -1,20 +1,7 @@
 using UnityEngine;
 
-public class StateSplash : MonoBehaviour, IGameState {
+public class StateSplash : GameStateMonoBehavior {
   public const string AdvanceButton = "Trigger";
-
-  private GameStateManager stateManager;
-
-  public void Register(GameStateManager states) {
-    stateManager = states;
-  }
-
-  public void Unregister(GameStateManager states) {
-    stateManager = null;
-  }
-
-  public void OnCurrentEnter() { }
-  public void OnCurrentExit() { }
 
   public void Start() {
     if (Gameboard.instance.ShowStartup) {
@@ -25,18 +12,15 @@ public class StateSplash : MonoBehaviour, IGameState {
     }
   }
 
-  public void Advance() {
+  public virtual void Advance() {
     stateManager.PopState();
     gameObject.SetActive(false);
     Time.timeScale = 1.0f;
   }
 
-  public void StateUpdate(GameStateManager states) {
+  public override void StateUpdate(GameStateManager states) {
     if (Input.GetButtonUp(AdvanceButton)) {
       Advance();
     }
-  }
-
-  public void StateFixedUpdate(GameStateManager states) {
   }
 }
