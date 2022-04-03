@@ -148,12 +148,17 @@ public class StatePlay : GameStateMonoBehavior {
 
   private void OnAttack(AttackType type) {
     switch (type) {
+      case AttackType.Attack1:
+      case AttackType.Attack2:
+        _player.TriggerParticles(rate: 20);
+        break;
       case AttackType.Attack3:
       case AttackType.Attack4:
+        _player.TriggerParticles(rate: 60);
         TriggerShake();
         break;
       case AttackType.Attack5:
-        Debug.LogFormat("Attack 5 shake");
+        _player.TriggerParticles(rate: 120);
         TriggerShake(durationBoost: 0.2f, magnitudeBoost: 0.1f);
         break;
     }

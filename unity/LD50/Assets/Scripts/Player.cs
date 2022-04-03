@@ -21,6 +21,7 @@ public struct AttackPowerInfo {
 public class Player : MonoBehaviour {
   private Vector3 _cube;
   private Vector3 _realPosition;
+  private ParticleSystem _particles;
 
   private AttackPowerInfo _attackPowerInfo = new AttackPowerInfo();
   public float attackPower {
@@ -85,6 +86,7 @@ public class Player : MonoBehaviour {
     GameCoordinate coordinate = coords.GetCoordinateFromContainer(cube, "all");
     transform.position = coordinate.transform.position;
     _realPosition = transform.position;
+    _particles = GetComponentInChildren<ParticleSystem>();
   }
 
   public void Move(Vector3 direction, GameCubeCoordinates coords) {
@@ -147,6 +149,14 @@ public class Player : MonoBehaviour {
       OnTemporaryBlockage.Invoke();
     } else {
       OnFailedAttack.Invoke();
+    }
+  }
+
+  public void TriggerParticles(float rate = 60.0f) {
+    if (_particles) {
+      _particles.Stop();
+      _particles.emissionRate = rate;
+      _particles.Play();
     }
   }
 
