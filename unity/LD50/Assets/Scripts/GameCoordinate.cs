@@ -22,6 +22,7 @@ public class GameCoordinate : Coordinate {
   private bool takeDamageOnTick;
   private int hitPoints;
   private int rotationSteps;
+  private int pointsValue;
 
   // Initializes the Coordinate given a cube coordinate and world transform position
   public void Init(Vector3 cube, Vector3 position, GameCubeCoordinates coords) {
@@ -46,6 +47,10 @@ public class GameCoordinate : Coordinate {
     } else {
       SetType(GameCoordinateType.Empty);
     }
+  }
+
+  public bool IsEnemyPiece() {
+    return type == GameCoordinateType.SpreadAlpha || type == GameCoordinateType.SpreadBeta;
   }
 
   private CoordinateConfig? GetPresetCoordinateConfig(Vector3 cube, GameCubeCoordinates coords) {
@@ -139,6 +144,7 @@ public class GameCoordinate : Coordinate {
           break;
         case GameCoordinateType.DamagedTemporaryBlockage:
         case GameCoordinateType.TemporaryBlockage:
+        case GameCoordinateType.Objective:
           target.takeDamageOnTick = true;
           break;
       }
@@ -150,8 +156,13 @@ public class GameCoordinate : Coordinate {
       SetType((GameCoordinateType)nextType);
     } else if (takeDamageOnTick) {
       hitPoints -= 1;
-      if (type == GameCoordinateType.TemporaryBlockage) {
-        SetType(GameCoordinateType.DamagedTemporaryBlockage);
+      switch (type) {
+        case GameCoordinateType.TemporaryBlockage:
+          SetType(GameCoordinateType.DamagedTemporaryBlockage);
+          break;
+        case GameCoordinateType.Objective:
+          Gameboard.instance.TriggerLoss();
+          break;
       }
       if (hitPoints <= 0) {
         switch (type) {
@@ -176,11 +187,13 @@ public class GameCoordinate : Coordinate {
 
   public bool ClearRadius(Vector3 cube, GameCubeCoordinates coords, int radius) {
     bool placed = false;
+    int score = 0;
     List<Vector3> reachableCubes = coords.GetReachableCubes(cube, radius);
     reachableCubes.Add(cube);
     foreach (Vector3 neighborCube in reachableCubes) {
       GameCoordinate neighbor = coords.GetCoordinateFromContainer(neighborCube, "all");
       int distance = (int)coords.GetDistanceBetweenTwoCubes(cube, neighborCube);
+      int neighborValue = neighbor.pointsValue;
       switch (neighbor.type) {
         case GameCoordinateType.SpreadAlpha:
         case GameCoordinateType.SpreadBeta:
@@ -202,7 +215,11 @@ public class GameCoordinate : Coordinate {
           placed = true;
           break;
       }
+      if (placed) {
+        score += neighborValue;
+      }
     }
+    Gameboard.instance.TriggerScoreIncrement(cube, score);
     return placed;
   }
 
@@ -226,13 +243,16 @@ public class GameCoordinate : Coordinate {
     if (newType == type) {
       return;
     }
+    pointsValue = 0;
     switch (newType) {
       case GameCoordinateType.SpreadAlpha:
         meshRenderer.material = Gameboard.instance.SpreadAlphaMaterial;
+        pointsValue = 2;
         break;
       case GameCoordinateType.SpreadBeta:
         meshRenderer.material = Gameboard.instance.SpreadBetaMaterial;
         hitPoints = Gameboard.instance.spreadBetaHitPoints;
+        pointsValue = 5;
         break;
       case GameCoordinateType.Empty:
         meshRenderer.material = Gameboard.instance.EmptyMaterial;
@@ -254,6 +274,7 @@ public class GameCoordinate : Coordinate {
       case GameCoordinateType.DamagedTemporaryBlockage:
         meshRenderer.material = Gameboard.instance.DamagedBlockageMaterial;
         elevation = 0.5f;
+        pointsValue = 1;
         break;
       default:
         // Uh oh?

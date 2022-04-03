@@ -11,6 +11,7 @@ public struct LevelInfo {
   public int BoardSize;
   public float BlockagePercent;
   public bool UseStarterPositions;
+  public float TickTimestep;
   public CoordinateConfig[] CoordinateConfigs;
 }
 
@@ -18,7 +19,6 @@ public class StatePlay : GameStateMonoBehavior {
   public const string MenuButton = "Menu";
   public const string TriggerButton = "Trigger";
   public HUD HUD;
-  public float tickTimeStep = 0.5f;
 
   public StateMenu stateMenu;
   public StateLevelComplete stateLevelComplete;
@@ -36,6 +36,7 @@ public class StatePlay : GameStateMonoBehavior {
       BoardSize = 10,
       BlockagePercent = 0.1f,
       UseStarterPositions = false,
+      TickTimestep = 1.0f,
       CoordinateConfigs = new CoordinateConfig[] {
         new CoordinateConfig() { Cube = new Vector3(0.0f,-10.0f,10.0f), Type = GameCoordinateType.SpreadAlpha },
         new CoordinateConfig() { Cube = new Vector3(-10.0f,10.0f,0.0f), Type = GameCoordinateType.SpreadAlpha },
@@ -47,6 +48,7 @@ public class StatePlay : GameStateMonoBehavior {
       BoardSize = 20,
       BlockagePercent = 0.2f,
       UseStarterPositions = false,
+      TickTimestep = 0.5f,
       CoordinateConfigs = new CoordinateConfig[] {
         new CoordinateConfig() { Cube = new Vector3(20.0f,-20.0f,0.0f), Type = GameCoordinateType.SpreadAlpha },
         new CoordinateConfig() { Cube = new Vector3(0.0f,-20.0f,20.0f), Type = GameCoordinateType.SpreadBeta },
@@ -59,7 +61,9 @@ public class StatePlay : GameStateMonoBehavior {
   };
   private LevelInfo level { get => levels[currentLevel]; }
 
+  private float _tickTimeStep = 0.5f;
   private float _elapsed;
+  private int _score;
   private GameCubeCoordinates _coords;
   private Player _player;
   private Vector3 _inputDirection;
@@ -69,6 +73,7 @@ public class StatePlay : GameStateMonoBehavior {
   }
 
   private void Start() {
+    _score = 0; // Don't erase each time a level is loaded.
     _coords = gameObject.GetComponent<GameCubeCoordinates>();
     stateMenu.gameObject.SetActive(false);
     stateLevelComplete.gameObject.SetActive(false);
@@ -79,6 +84,7 @@ public class StatePlay : GameStateMonoBehavior {
 
   private void LoadLevel(bool generateSeed = false) {
     _elapsed = 0.0f;
+    _tickTimeStep = level.TickTimestep;
     if (_player) {
       playerCamera.Reset();
       _player.OnFailedAttack.RemoveAllListeners();
@@ -113,9 +119,16 @@ public class StatePlay : GameStateMonoBehavior {
       GameCoordinate coord = _coords.GetCoordinateFromContainer(cube, "all");
       coord.Tick(cube, _coords);
     }
+    bool seenEnemyPiece = false;
     foreach (Vector3 cube in _coords.GetCubesFromContainer("all")) {
       GameCoordinate coord = _coords.GetCoordinateFromContainer(cube, "all");
       coord.ApplyTick();
+      if (coord.IsEnemyPiece()) {
+        seenEnemyPiece = true;
+      }
+    }
+    if (!seenEnemyPiece) {
+      TriggerLevelWin();
     }
   }
 
@@ -187,8 +200,8 @@ public class StatePlay : GameStateMonoBehavior {
 
   public override void StateFixedUpdate(GameStateManager states) {
     _elapsed += Time.fixedDeltaTime;
-    if (_elapsed > tickTimeStep) {
-      _elapsed -= tickTimeStep;
+    if (_elapsed > _tickTimeStep) {
+      _elapsed -= _tickTimeStep;
       Tick();
     }
     if (_inputDirection.sqrMagnitude > 0) {
@@ -208,5 +221,10 @@ public class StatePlay : GameStateMonoBehavior {
 
   public void TriggerLevelLoss() {
     SetGameState(stateGameOver);
+  }
+
+  public void TriggerScoreIncrement(Vector3 cube, int amount) {
+    _score += amount;
+    HUD.SetScore(_score);
   }
 }

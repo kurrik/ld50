@@ -6,7 +6,6 @@ using UnityEngine.SceneManagement;
 public class Gameboard : MonoBehaviour {
   public static Gameboard instance = null;
 
-  public int gridSize = 20;
   public int objectiveRadius = 1;
   public int temporaryBlockageHitPoints = 5;
   public int spreadBetaHitPoints = 5;
@@ -57,6 +56,18 @@ public class Gameboard : MonoBehaviour {
 
   public void Reload() {
     SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+  }
+
+  public void TriggerWin() {
+    statePlay.TriggerLevelWin();
+  }
+
+  public void TriggerLoss() {
+    statePlay.TriggerLevelLoss();
+  }
+
+  public void TriggerScoreIncrement(Vector3 cube, int amount) {
+    statePlay.TriggerScoreIncrement(cube, amount);
   }
 
   private void Awake() {
