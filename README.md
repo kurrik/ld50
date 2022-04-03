@@ -6,20 +6,21 @@ Ludum Dare 50
 - [x] Move cursor around
 - [x] Rate limit attacks
 - [x] Different kinds of attacks
-- [ ] Failure case
-- [ ] Success case?
-- [ ] Level cycling?
-- [ ] Points system
+- [x] Failure case
+- [x] Success case?
+- [x] Level cycling?
+- [x] Points system
 - [x] HUD
-- [ ] Music
-- [ ] Sound effects
-- [ ] Visual effects
 - [x] Camera movement
 - [x] Camera zoom
-- [ ] Splash screen
-- [ ] Better art
-- [ ] Screen shake
-- [ ] Special effects
+- [x] Splash screen
+- [x] Screen shake
+- [ ] Music
+- [ ] Sound effects
+- [ ] Score VFX
+- [ ] VFX for attacks
+- [ ] Better art / fonts / splash screens
+- [ ] Mechanic to solve the stalemate problem
 
 ## Brainstorming
 Things which feel inevitable:
