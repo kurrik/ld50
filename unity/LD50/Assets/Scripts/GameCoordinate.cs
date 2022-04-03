@@ -28,19 +28,20 @@ public class GameCoordinate : Coordinate {
     base.Init(cube, position);
     meshRenderer = gameObject.GetComponent<MeshRenderer>();
     float randomTypeValue = Random.Range(0.0f, 1.0f);
+    LevelInfo info = coords.info;
     CoordinateConfig? presetConfig = GetPresetCoordinateConfig(cube, coords);
     if (presetConfig != null) {
       CoordinateConfig cfg = (CoordinateConfig)presetConfig;
       SetType(cfg.Type);
     } else if (isObjectivePosition(cube, coords)) {
       SetType(GameCoordinateType.Objective);
-    } else if (isStarterCubePosition(cube, coords.radius)) {
+    } else if (info.UseStarterPositions && isStarterCubePosition(cube, coords)) {
       if (Random.Range(0.0f, 1.0f) < 0.5f) {
         SetType(GameCoordinateType.SpreadAlpha);
       } else {
         SetType(GameCoordinateType.SpreadBeta);
       }
-    } else if (randomTypeValue < 0.2f) {
+    } else if (randomTypeValue < info.BlockagePercent) {
       SetType(GameCoordinateType.Blockage);
     } else {
       SetType(GameCoordinateType.Empty);
@@ -65,7 +66,8 @@ public class GameCoordinate : Coordinate {
     return false;
   }
 
-  private bool isStarterCubePosition(Vector3 cube, int radius) {
+  private bool isStarterCubePosition(Vector3 cube, GameCubeCoordinates coords) {
+    int radius = coords.radius;
     float x = Mathf.Abs(cube.x);
     float y = Mathf.Abs(cube.y);
     float z = Mathf.Abs(cube.z);

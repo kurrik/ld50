@@ -9,6 +9,8 @@ public struct CoordinateConfig {
 public struct LevelInfo {
   public int Seed;
   public int BoardSize;
+  public float BlockagePercent;
+  public bool UseStarterPositions;
   public CoordinateConfig[] CoordinateConfigs;
 }
 
@@ -30,8 +32,21 @@ public class StatePlay : GameStateMonoBehavior {
   private int currentLevel = 0;
   private LevelInfo[] levels = {
     new LevelInfo(){
+      Seed = 34927,
+      BoardSize = 10,
+      BlockagePercent = 0.1f,
+      UseStarterPositions = false,
+      CoordinateConfigs = new CoordinateConfig[] {
+        new CoordinateConfig() { Cube = new Vector3(0.0f,-10.0f,10.0f), Type = GameCoordinateType.SpreadAlpha },
+        new CoordinateConfig() { Cube = new Vector3(-10.0f,10.0f,0.0f), Type = GameCoordinateType.SpreadAlpha },
+        new CoordinateConfig() { Cube = new Vector3(10.0f,0.0f,-10.0f), Type = GameCoordinateType.SpreadAlpha },
+      },
+    },
+    new LevelInfo(){
       Seed = 1228,
       BoardSize = 20,
+      BlockagePercent = 0.2f,
+      UseStarterPositions = false,
       CoordinateConfigs = new CoordinateConfig[] {
         new CoordinateConfig() { Cube = new Vector3(20.0f,-20.0f,0.0f), Type = GameCoordinateType.SpreadAlpha },
         new CoordinateConfig() { Cube = new Vector3(0.0f,-20.0f,20.0f), Type = GameCoordinateType.SpreadBeta },
@@ -141,6 +156,12 @@ public class StatePlay : GameStateMonoBehavior {
         LoadLevel(true);
         return;
       }
+      if (Input.GetKeyDown(KeyCode.F2)) {
+        TriggerLevelWin();
+      }
+      if (Input.GetKeyDown(KeyCode.F3)) {
+        TriggerLevelLoss();
+      }
       if (Input.GetMouseButtonDown(1)) {
         Vector3 worldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -173,5 +194,19 @@ public class StatePlay : GameStateMonoBehavior {
     if (_inputDirection.sqrMagnitude > 0) {
       _player.Move(_inputDirection, _coords);
     }
+  }
+
+  public void TriggerLevelWin() {
+    if (currentLevel == levels.Length - 1) {
+      SetGameState(stateGameWon);
+    } else {
+      currentLevel += 1;
+      SetGameState(stateLevelComplete);
+      LoadLevel();
+    }
+  }
+
+  public void TriggerLevelLoss() {
+    SetGameState(stateGameOver);
   }
 }
