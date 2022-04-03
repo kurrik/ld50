@@ -28,7 +28,11 @@ public class GameCoordinate : Coordinate {
     base.Init(cube, position);
     meshRenderer = gameObject.GetComponent<MeshRenderer>();
     float randomTypeValue = Random.Range(0.0f, 1.0f);
-    if (isObjectivePosition(cube, coords)) {
+    CoordinateConfig? presetConfig = GetPresetCoordinateConfig(cube, coords);
+    if (presetConfig != null) {
+      CoordinateConfig cfg = (CoordinateConfig)presetConfig;
+      SetType(cfg.Type);
+    } else if (isObjectivePosition(cube, coords)) {
       SetType(GameCoordinateType.Objective);
     } else if (isStarterCubePosition(cube, coords.radius)) {
       if (Random.Range(0.0f, 1.0f) < 0.5f) {
@@ -41,6 +45,16 @@ public class GameCoordinate : Coordinate {
     } else {
       SetType(GameCoordinateType.Empty);
     }
+  }
+
+  private CoordinateConfig? GetPresetCoordinateConfig(Vector3 cube, GameCubeCoordinates coords) {
+    CoordinateConfig[] configs = coords.info.CoordinateConfigs;
+    foreach (CoordinateConfig config in configs) {
+      if (config.Cube == cube) {
+        return config;
+      }
+    }
+    return null;
   }
 
   private bool isObjectivePosition(Vector3 cube, GameCubeCoordinates coords) {
@@ -97,7 +111,7 @@ public class GameCoordinate : Coordinate {
         new Vector3(0.0f, 1.0f, -1.0f),
     };
   public void SpreadBeta(Vector3 cube, GameCubeCoordinates coords) {
-    rotationSteps = Random.Range(-3, 2);
+    rotationSteps = Random.Range(-3, 3);
     Spread(cube, _spreadBetaPattern, coords, GameCoordinateType.SpreadBeta, rotationSteps);
   }
 
@@ -109,7 +123,7 @@ public class GameCoordinate : Coordinate {
           adjustedOffset = coords.RotateCubeCoordinatesRight(adjustedOffset);
         }
       } else if (rotate < 0) {
-        for (int i = 0; i < rotate; i++) {
+        for (int i = rotate; i < 0; i++) {
           adjustedOffset = coords.RotateCubeCoordinatesLeft(adjustedOffset);
         }
       }

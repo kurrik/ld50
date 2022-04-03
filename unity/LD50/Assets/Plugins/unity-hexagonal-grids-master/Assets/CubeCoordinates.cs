@@ -72,7 +72,7 @@ public abstract class CubeCoordinates<T> : MonoBehaviour where T : Coordinate {
   }
 
   // Destroys all coordinates and entries
-  private void Clear() {
+  public void Clear() {
     Destroy(_group);
     ClearAllCoordinateContainers();
   }

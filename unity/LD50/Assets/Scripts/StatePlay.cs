@@ -23,15 +23,22 @@ public class StatePlay : GameStateMonoBehavior {
   public StateTerminal stateGameOver;
   public StateTerminal stateGameWon;
   public Player playerPrefab;
+  public GameCoordinate coordinatePrefab;
   public AttackBar attackBar;
   public PlayerCamera playerCamera;
 
   private int currentLevel = 0;
   private LevelInfo[] levels = {
     new LevelInfo(){
-      Seed = 1234,
+      Seed = 1228,
+      BoardSize = 20,
       CoordinateConfigs = new CoordinateConfig[] {
-        new CoordinateConfig() { Cube = new Vector3(0.0f,0.0f,0.0f), Type = GameCoordinateType.SpreadAlpha },
+        new CoordinateConfig() { Cube = new Vector3(20.0f,-20.0f,0.0f), Type = GameCoordinateType.SpreadAlpha },
+        new CoordinateConfig() { Cube = new Vector3(0.0f,-20.0f,20.0f), Type = GameCoordinateType.SpreadBeta },
+        new CoordinateConfig() { Cube = new Vector3(-20.0f,0.0f,20.0f), Type = GameCoordinateType.SpreadAlpha },
+        new CoordinateConfig() { Cube = new Vector3(-20.0f,20.0f,0.0f), Type = GameCoordinateType.SpreadBeta },
+        new CoordinateConfig() { Cube = new Vector3(0.0f,20.0f,-20.0f), Type = GameCoordinateType.SpreadAlpha },
+        new CoordinateConfig() { Cube = new Vector3(20.0f,0.0f,-20.0f), Type = GameCoordinateType.SpreadBeta },
       },
     },
   };
@@ -47,7 +54,6 @@ public class StatePlay : GameStateMonoBehavior {
   }
 
   private void Start() {
-    _elapsed = 0.0f;
     _coords = gameObject.GetComponent<GameCubeCoordinates>();
     stateMenu.gameObject.SetActive(false);
     stateLevelComplete.gameObject.SetActive(false);
@@ -56,8 +62,24 @@ public class StatePlay : GameStateMonoBehavior {
     LoadLevel();
   }
 
-  private void LoadLevel() {
-    _coords.Construct(20);
+  private void LoadLevel(bool generateSeed = false) {
+    _elapsed = 0.0f;
+    if (_player) {
+      playerCamera.Reset();
+      _player.OnFailedAttack.RemoveAllListeners();
+      _player.OnAttack.RemoveAllListeners();
+      _player.OnAttackPowerUpdate.RemoveAllListeners();
+      Destroy(_player.gameObject);
+      _player = null;
+    }
+    int seed = level.Seed;
+    if (generateSeed) {
+      seed = Random.Range(0, 10000);
+    }
+    Debug.LogFormat("Using random seed {0}", seed);
+    Random.InitState(seed);
+    _coords.info = level;
+    _coords.Construct(level.BoardSize);
     LoadPlayer();
   }
 
@@ -83,11 +105,11 @@ public class StatePlay : GameStateMonoBehavior {
   }
 
   private void OnFailedAttack() {
-    Debug.LogFormat("Failed attack!");
+    // Debug.LogFormat("Failed attack!");
   }
 
   private void OnAttack() {
-    Debug.LogFormat("Attack!");
+    // Debug.LogFormat("Attack!");
   }
 
   private void OnAttackPowerUpdate(AttackPowerInfo info) {
@@ -97,7 +119,6 @@ public class StatePlay : GameStateMonoBehavior {
   private void SetGameState(GameStateMonoBehavior state) {
     if (stateManager != null) {
       state.gameObject.SetActive(true);
-      Debug.LogFormat("Menu enabled");
       stateManager.PushState(state);
     }
   }
@@ -117,7 +138,7 @@ public class StatePlay : GameStateMonoBehavior {
     }
     if (Gameboard.instance.DebugEnabled) {
       if (Input.GetKeyDown(KeyCode.F1)) {
-        LoadLevel();
+        LoadLevel(true);
         return;
       }
       if (Input.GetMouseButtonDown(1)) {
@@ -134,7 +155,7 @@ public class StatePlay : GameStateMonoBehavior {
       }
     }
 
-    if (Input.GetButtonUp(TriggerButton)) {
+    if (Input.GetButtonUp(TriggerButton) && _player) {
       _player.Trigger(_coords);
     }
 
