@@ -2598,11 +2598,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97eeb019f42a74c4e9e8b7ceddb287f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerPrefab: {fileID: 492855825025846610, guid: 2fd87e11e6318634a83e501ac7f16b7a, type: 3}
-  attackBar: {fileID: 145836686}
-  playerCamera: {fileID: 963194229}
   gridSize: 20
-  tickTimeStep: 0.5
   objectiveRadius: 1
   temporaryBlockageHitPoints: 5
   spreadBetaHitPoints: 5
@@ -2656,10 +2652,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   HUD: {fileID: 1897673469}
+  tickTimeStep: 0.5
   stateMenu: {fileID: 1638704811}
   stateLevelComplete: {fileID: 513299041}
   stateGameOver: {fileID: 289776290}
   stateGameWon: {fileID: 30885886}
+  playerPrefab: {fileID: 492855825025846610, guid: 2fd87e11e6318634a83e501ac7f16b7a, type: 3}
+  attackBar: {fileID: 145836686}
+  playerCamera: {fileID: 963194229}
 --- !u!1 &1726460466
 GameObject:
   m_ObjectHideFlags: 0
