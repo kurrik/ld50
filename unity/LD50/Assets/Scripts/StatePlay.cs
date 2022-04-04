@@ -57,11 +57,37 @@ public class StatePlay : GameStateMonoBehavior {
       BoardSize = 15,
       BlockagePercent = 0.05f,
       UseStarterPositions = true,
-      TickTimestep = 1.0f,
+      TickTimestep = 0.9f,
       ObjectiveIntervalCount = 5,
       ObjectiveIntervalTicks = 10,
       objectiveStartingElevation = 5.0f,
       CoordinateConfigs = new CoordinateConfig[] {
+      },
+    },
+    new LevelInfo(){
+      Seed = 8,
+      BoardSize = 15,
+      BlockagePercent = 0.30f,
+      UseStarterPositions = false,
+      TickTimestep = 0.7f,
+      ObjectiveIntervalCount = 10,
+      ObjectiveIntervalTicks = 5,
+      objectiveStartingElevation = 5.0f,
+      CoordinateConfigs = new CoordinateConfig[] {
+        new CoordinateConfig() { Cube = new Vector3(8.0f,-8.0f,0.0f), Type = GameCoordinateType.SpreadAlpha },
+
+        new CoordinateConfig() { Cube = new Vector3(0.0f,-10.0f,10.0f), Type = GameCoordinateType.Objective },
+        new CoordinateConfig() { Cube = new Vector3(0.0f,-15.0f,15.0f), Type = GameCoordinateType.SpreadBeta },
+
+        new CoordinateConfig() { Cube = new Vector3(-8.0f,0.0f,8.0f), Type = GameCoordinateType.SpreadAlpha },
+
+        new CoordinateConfig() { Cube = new Vector3(-10.0f,10.0f,0.0f), Type = GameCoordinateType.Objective },
+        new CoordinateConfig() { Cube = new Vector3(-15.0f,15.0f,0.0f), Type = GameCoordinateType.SpreadBeta },
+
+        new CoordinateConfig() { Cube = new Vector3(0.0f,8.0f,-8.0f), Type = GameCoordinateType.SpreadAlpha },
+
+        new CoordinateConfig() { Cube = new Vector3(10.0f,0.0f,-10.0f), Type = GameCoordinateType.Objective },
+        new CoordinateConfig() { Cube = new Vector3(15.0f,0.0f,-15.0f), Type = GameCoordinateType.SpreadBeta },
       },
     },
     new LevelInfo(){
