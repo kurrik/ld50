@@ -1,5 +1,6 @@
 # LD50 - Delay the inevitable
 Ludum Dare 50
+PLay the game at https://kurrik.itch.io/hexattack
 
 ## TODO
 - [x] Controller wired up
