@@ -117,12 +117,8 @@ public class StatePlay : GameStateMonoBehavior {
   private GameCubeCoordinates _coords;
   private Player _player;
   private Vector3 _inputDirection;
-  private bool _triggerReady;
-#if UNITY_WEBGL
-  private float _minAttackTime = 0.20f;
-#else
+  private bool _attackReady;
   private float _minAttackTime = 0.1f;
-#endif
   private float _elapsedAttackTime = 0.0f;
 
   private void Awake() {
@@ -161,7 +157,7 @@ public class StatePlay : GameStateMonoBehavior {
     LoadPlayer();
     ObjectiveIcon.DisableAllIcons();
     HUD.SetRemaining("");
-    _triggerReady = true;
+    _attackReady = true;
   }
 
   private void LoadPlayer() {
@@ -207,7 +203,6 @@ public class StatePlay : GameStateMonoBehavior {
 
   private void OnFailedAttack() {
     HUD.ShowWarningIcon();
-    _triggerReady = true;
   }
 
   private void OnAttack(AttackType type) {
@@ -227,7 +222,6 @@ public class StatePlay : GameStateMonoBehavior {
         break;
     }
     audioSource.PlayOneShot(attackAudio, Random.Range(1.0f, 1.2f));
-    _triggerReady = true;
   }
 
   private void OnAttackPowerUpdate(AttackPowerInfo info) {
@@ -292,8 +286,7 @@ public class StatePlay : GameStateMonoBehavior {
     }
 
     if (Input.GetButtonUp(TriggerButton) && _player && (_elapsedAttackTime >= _minAttackTime)) {
-      _elapsedAttackTime = 0.0f;
-      _player.Trigger(_coords);
+      _attackReady = true;
     }
 
     float horizontalInput = Input.GetAxisRaw("Horizontal");
@@ -307,6 +300,11 @@ public class StatePlay : GameStateMonoBehavior {
     if (_elapsed > _tickTimeStep) {
       _elapsed -= _tickTimeStep;
       Tick();
+    }
+    if (_attackReady) {
+      _elapsedAttackTime = 0.0f;
+      _player.Trigger(_coords);
+      _attackReady = false;
     }
     if (_inputDirection.sqrMagnitude > 0) {
       _player.Move(_inputDirection, _coords);
