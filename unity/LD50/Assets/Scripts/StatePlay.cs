@@ -53,6 +53,18 @@ public class StatePlay : GameStateMonoBehavior {
       },
     },
     new LevelInfo(){
+      Seed = 1234,
+      BoardSize = 15,
+      BlockagePercent = 0.05f,
+      UseStarterPositions = true,
+      TickTimestep = 1.0f,
+      ObjectiveIntervalCount = 5,
+      ObjectiveIntervalTicks = 10,
+      objectiveStartingElevation = 5.0f,
+      CoordinateConfigs = new CoordinateConfig[] {
+      },
+    },
+    new LevelInfo(){
       Seed = 1228,
       BoardSize = 20,
       BlockagePercent = 0.2f,
