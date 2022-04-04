@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>{{{ PRODUCT_NAME }}}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300&display=swap" rel="stylesheet">
+    <style>
+      body {
+        background-color: #464646;
+        background-image: url('Build/{{{ BACKGROUND_FILENAME }}}');
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-position: bottom left;
+        background-size: cover;
+      }
+      #unityContainer {
+        width: {{{ WIDTH }}}px;
+        height: {{{ HEIGHT }}}px;
+        margin: 0 auto !important;
+        border: 10px solid #fff !important;
+        display: block;
+      }
+      .text a {
+        color: #000000;
+        background: #ffffff;
+        padding: 5px;
+        text-decoration: none;
+      }
+      .text {
+        text-align: center;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 32px;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="unityContainer"></canvas>
+    <p class="text"><a target="_blank" href="https://kurrik.itch.io/hexattack">kurrik.itch.io/hexattack</a></p>
+    <script>
+      var buildUrl = "Build";
+      var loaderUrl = buildUrl + "/{{{ LOADER_FILENAME }}}";
+      var script = document.createElement("script");
+      script.src = loaderUrl;
+      script.onload = () => {
+        var buildUrl = "Build";
+        var config = {
+          dataUrl: buildUrl + "/{{{ DATA_FILENAME }}}",
+          frameworkUrl: buildUrl + "/{{{ FRAMEWORK_FILENAME }}}",
+          codeUrl: buildUrl + "/{{{ CODE_FILENAME }}}",
+#if MEMORY_FILENAME
+          memoryUrl: buildUrl + "/{{{ MEMORY_FILENAME }}}",
+#endif
+#if SYMBOLS_FILENAME
+          symbolsUrl: buildUrl + "/{{{ SYMBOLS_FILENAME }}}",
+#endif
+          streamingAssetsUrl: "StreamingAssets",
+          companyName: "{{{ COMPANY_NAME }}}",
+          productName: "{{{ PRODUCT_NAME }}}",
+          productVersion: "{{{ PRODUCT_VERSION }}}",
+        };
+        createUnityInstance(document.getElementById('unityContainer'), config, (progress) => {})
+          .then((unityInstance) => {})
+          .catch((message) => {
+            console.log('Error', message);
+          });
+      };
+      document.body.appendChild(script);
+    </script>
+  </body>
+</html>
