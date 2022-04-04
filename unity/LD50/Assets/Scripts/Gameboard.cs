@@ -80,6 +80,10 @@ public class Gameboard : MonoBehaviour {
     statePlay.TriggerObjectiveIcon(position);
   }
 
+  public void ToggleFullscreen() {
+    Screen.fullScreen = !Screen.fullScreen;
+  }
+
   private void Awake() {
     if (instance == null) {
       instance = this;
