@@ -31,6 +31,9 @@ public class StatePlay : GameStateMonoBehavior {
   public GameCoordinate coordinatePrefab;
   public AttackBar attackBar;
   public PlayerCamera playerCamera;
+  public AudioSource audioSource;
+  public AudioClip attackAudio;
+
 
   private int currentLevel = 0;
   private LevelInfo[] levels = {
@@ -176,6 +179,7 @@ public class StatePlay : GameStateMonoBehavior {
         TriggerShake(durationBoost: 0.2f, magnitudeBoost: 0.1f);
         break;
     }
+    audioSource.PlayOneShot(attackAudio, Random.Range(1.0f, 1.2f));
   }
 
   private void OnAttackPowerUpdate(AttackPowerInfo info) {
@@ -199,7 +203,7 @@ public class StatePlay : GameStateMonoBehavior {
 
   public override void StateUpdate(GameStateManager states) {
     if (Input.GetButtonUp(MenuButton)) {
-      stateMenu.SetText("Neat");
+      stateMenu.SetText(string.Format("You have scored {0} points...", _score));
       SetGameState(stateMenu);
     }
     if (Gameboard.instance.DebugEnabled) {
