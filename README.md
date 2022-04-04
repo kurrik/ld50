@@ -15,11 +15,11 @@ Ludum Dare 50
 - [x] Camera zoom
 - [x] Splash screen
 - [x] Screen shake
-- [ ] Music
-- [ ] Sound effects
+- [x] Music
+- [x] Sound effects
 - [ ] Score VFX
 - [x] VFX for attacks
-- [ ] Better art / fonts / splash screens
+- [x] Better art / fonts / splash screens
 - [x] Mechanic to solve the stalemate problem
 
 ## Brainstorming
