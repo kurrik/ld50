@@ -98,7 +98,7 @@ public class StatePlay : GameStateMonoBehavior {
       TickTimestep = 0.5f,
       ObjectiveIntervalCount = 5,
       ObjectiveIntervalTicks = 30,
-      objectiveStartingElevation = 2.0f,
+      objectiveStartingElevation = 5.0f,
       CoordinateConfigs = new CoordinateConfig[] {
         new CoordinateConfig() { Cube = new Vector3(20.0f,-20.0f,0.0f), Type = GameCoordinateType.SpreadAlpha },
         new CoordinateConfig() { Cube = new Vector3(0.0f,-20.0f,20.0f), Type = GameCoordinateType.SpreadBeta },
